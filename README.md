@@ -18,4 +18,5 @@ You should be able to deploy this application to Vercel by simply connecting the
 
 ## Exact Dates/Days and Times
 Smedly work schedule afternoons 2pm
+
 Darrell, Bryan, Phone 10am-4pm
