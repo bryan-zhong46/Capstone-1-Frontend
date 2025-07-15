@@ -49,7 +49,14 @@ const App = () => {
     try {
       const response = await axios.post(
         `${API_URL}/auth/auth0`,
-        {},
+        {
+          auth0Id: auth0User.sub,
+          email: auth0User.email,
+          username:
+            auth0User.nickname ||
+            auth0User.email?.split("@")[0] ||
+            `user_${Date.now()}`,
+        },
         {
           withCredentials: true,
         }
@@ -85,7 +92,12 @@ const App = () => {
       <NavBar user={user} onLogout={handleLogout} />
       <div className="app">
         <Routes>
-          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route
+            path="/login"
+            element={
+              <Login setUser={setUser} onAuth0Login={handleAuth0LoginClick} />
+            }
+          />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
