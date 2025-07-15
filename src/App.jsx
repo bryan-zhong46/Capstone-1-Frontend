@@ -14,6 +14,7 @@ import { auth0Config } from "./auth0-config";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const {
     isAuthenticated,
     user: auth0User,
@@ -30,6 +31,8 @@ const App = () => {
     } catch {
       console.log("Not authenticated");
       setUser(null);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,6 +81,13 @@ const App = () => {
         }
       );
       setUser(null);
+
+      // Logout from Auth0
+      auth0Logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        },
+      });
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -86,6 +96,10 @@ const App = () => {
   const handleAuth0LoginClick = () => {
     loginWithRedirect();
   };
+
+  if (loading) {
+    return <div className="app">Loading...</div>;
+  }
 
   return (
     <div>
