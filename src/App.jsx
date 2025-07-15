@@ -9,11 +9,17 @@ import Signup from "./components/Signup";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
 import { API_URL } from "./shared";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { auth0Config } from "./auth0-config";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const {
+    isAuthenticated,
+    user: auth0User,
+    loginWithRedirect,
+    logout: auth0Logout,
+  } = useAuth0();
 
   const checkAuth = async () => {
     try {
@@ -32,6 +38,28 @@ const App = () => {
     checkAuth();
   }, []);
 
+  // Handle Auth0 authentication
+  useEffect(() => {
+    if (isAuthenticated && auth0User) {
+      handleAuth0Login();
+    }
+  }, [isAuthenticated, auth0User]);
+
+  const handleAuth0Login = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/auth0`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Auth0 login error:", error);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       // Logout from our backend
@@ -46,6 +74,10 @@ const App = () => {
     } catch (error) {
       console.error("Logout error:", error);
     }
+  };
+
+  const handleAuth0LoginClick = () => {
+    loginWithRedirect();
   };
 
   return (
