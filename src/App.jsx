@@ -59,6 +59,7 @@ const App = () => {
             auth0User.nickname ||
             auth0User.email?.split("@")[0] ||
             `user_${Date.now()}`,
+          picture: auth0User.picture,
         },
         {
           withCredentials: true,
@@ -103,7 +104,7 @@ const App = () => {
 
   return (
     <div>
-      <NavBar user={user} onLogout={handleLogout} />
+      <NavBar user={user} auth0User={auth0User} onLogout={handleLogout} />
       <div className="app">
         <Routes>
           <Route
