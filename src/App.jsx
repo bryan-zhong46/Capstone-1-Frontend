@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
+import MakePoll from "./components/MakePoll";
 import { API_URL } from "./shared";
 
 const App = () => {
@@ -38,7 +39,7 @@ const App = () => {
         {},
         {
           withCredentials: true,
-        }
+        },
       );
       setUser(null);
     } catch (error) {
@@ -53,6 +54,7 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
+          <Route path="/make-poll" element={<MakePoll setUser={setUser} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
