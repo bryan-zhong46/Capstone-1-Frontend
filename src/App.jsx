@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
+import UserProfile from "./components/UserProfile";
 import { API_URL } from "./shared";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { auth0Config } from "./auth0-config";
@@ -28,6 +29,7 @@ const App = () => {
         withCredentials: true,
       });
       setUser(response.data.user);
+      console.log(response.data.user);
     } catch {
       console.log("Not authenticated");
       setUser(null);
@@ -116,7 +118,7 @@ const App = () => {
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
-          <Route path="/profile" />
+          <Route path="/users/:id" element={<UserProfile user={user} />} />
         </Routes>
       </div>
     </div>

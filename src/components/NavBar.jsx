@@ -1,8 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./NavBarStyles.css";
 
 const NavBar = ({ user, onLogout, auth0User }) => {
+  const navigate = useNavigate();
+
+  const handleView = () => {
+    console.log(user);
+    navigate(`/users/${user.id}`);
+  };
+
   return (
     <nav className="navbar">
       <div className="nav-brand">
@@ -12,7 +19,7 @@ const NavBar = ({ user, onLogout, auth0User }) => {
       <div className="nav-links">
         {user ? (
           <div className="user-section">
-            <Link to="/profile">Profile</Link>
+            <button onClick={handleView}>Profile</button>
             <span className="username">Welcome, {user.username}!</span>
             <img
               src={auth0User?.picture}
