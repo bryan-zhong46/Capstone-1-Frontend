@@ -116,6 +116,7 @@ const App = () => {
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/profile" />
         </Routes>
       </div>
     </div>
