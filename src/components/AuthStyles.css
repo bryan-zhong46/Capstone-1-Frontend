@@ -144,3 +144,8 @@
 .auth-link a:hover {
   text-decoration: underline;
 }
+
+.auth-profile-picture {
+  width: 100px;
+  height: 100px;
+}

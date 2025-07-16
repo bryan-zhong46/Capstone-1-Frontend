@@ -13,7 +13,10 @@ const NavBar = ({ user, onLogout, auth0User }) => {
         {user ? (
           <div className="user-section">
             <span className="username">Welcome, {user.username}!</span>
-            <img src={auth0User?.picture}></img>
+            <img
+              src={auth0User?.picture}
+              className="auth-profile-picture"
+            ></img>
             <button onClick={onLogout} className="logout-btn">
               Logout
             </button>
