@@ -103,7 +103,7 @@ const App = () => {
 
   return (
     <div>
-      <NavBar user={user} onLogout={handleLogout} />
+      <NavBar user={user} auth0={auth0User} onLogout={handleLogout} />
       <div className="app">
         <Routes>
           <Route
