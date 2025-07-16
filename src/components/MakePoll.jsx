@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../shared";
+import MakePollOptions from "./MakePollOptions";
 
 /**
  * Component for creating a new poll.
@@ -107,6 +108,32 @@ export default function MakePoll({ setUser }) {
             <span className="error-text">{errors.description}</span>
           )}
         </div>
+
+        <div className="form-group">
+          <label htmlFor="exp-date">Expiration Date:</label>
+          <input
+            type="date"
+            id="exp-date"
+            name="exp-date"
+            value={pollData.expiration}
+            onChange={handleChange}
+            className={errors.expiration ? "error" : ""}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="auth_req">Require Authentication?</label>
+          <input
+            type="checkbox"
+            id="auth_req"
+            name="auth_req"
+            value={pollData.auth_req}
+            onChange={handleChange}
+            className={errors.auth_req ? "error" : ""}
+          />
+        </div>
+
+        <MakePollOptions poll={poll}/>
 
         <div className="button-container">
           <button type="submit">Publish Poll</button>

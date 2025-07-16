@@ -44,6 +44,6 @@ module.exports = {
     compress: true,
     historyApiFallback: true,
     port: 3000,
-    // allowedHosts: "all", // replit code
+    allowedHosts: "all", // replit code
   },
 };
