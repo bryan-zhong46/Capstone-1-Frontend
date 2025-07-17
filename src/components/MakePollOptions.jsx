@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 
+let nextId = 0;
+
 export default function MakePollOptions() {
   const [pollOptions, setPollOptions] = useState([]);
   const [newOption, setNewOption] = useState("");
 
-  function handleAddOption(e) {
-    e.preventDefault();
-
-    console.log("Adding new option.");
-    setPollOptions([...pollOptions, newOption]);
+  function handleAddOption() {
+    setPollOptions([...pollOptions, { id: nextId++, text: newOption }]);
     setNewOption("");
   }
-  
+
   function handleChange(e) {
     setNewOption(e.target.value);
   }
@@ -22,9 +21,16 @@ export default function MakePollOptions() {
 
       <ul>
         {pollOptions.map((option) => (
-          <li>
-            {option}
-            <button type="button">Delete</button>
+          <li key={option.id}>
+            {option.text}{" "}
+            <button
+              type="button"
+              onClick={() => {
+                setPollOptions(pollOptions.filter((o) => o.id !== option.id));
+              }}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
@@ -42,8 +48,6 @@ export default function MakePollOptions() {
           Add Option
         </button>
       </div>
-
-      <p>Poll Options: {pollOptions}</p>
     </div>
   );
 }
