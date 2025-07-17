@@ -16,16 +16,20 @@ const UserProfile = ({ user }) => {
   const checkUser = () => {
     if (user?.id == userID) {
       setIsUser(true);
-      console.log("It is the same user");
+      console.log("Same user");
     } else {
-      console.log("It is not the same user");
+      console.log("Not the same user");
     }
   };
 
   const updateUser = async () => {
     if (isUser) {
       try {
-        await axios.patch(`${API_URL}/api/users/${id}`, userData);
+        const response = await axios.patch(
+          `${API_URL}/api/users/${id}`,
+          userData
+        );
+        console.log("Status: ", response.status);
       } catch (error) {
         console.log(error);
       }
