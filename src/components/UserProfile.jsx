@@ -6,9 +6,10 @@ import { useParams } from "react-router-dom";
 
 const UserProfile = ({ user }) => {
   const { id } = useParams();
-  const userID = Number(id);
+  const userID = Number(id); //convert id from string to number
 
   const [isUser, setIsUser] = useState(false);
+  const [userData, setUserData] = useState({});
 
   console.log(userID);
 
@@ -21,22 +22,45 @@ const UserProfile = ({ user }) => {
     }
   };
 
+  const updateUser = async () => {
+    if (isUser) {
+      try {
+        await axios.patch(`${API_URL}/api/users/1`, userData);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   useEffect(() => {
     //handleView;
     checkUser();
+  }, [user]);
+
+  useEffect(() => {
+    if (isUser) {
+      setUserData({
+        email: "TestUser@gmail.com",
+      });
+    }
   }, []);
 
   return (
     <div>
       {isUser ? (
         <div>
-          <h1>{user.username}'s Profile</h1>
+          <p>User</p>
         </div>
       ) : (
         <div>
-          <p>test</p>
+          <p>Not User</p>
         </div>
       )}
+
+      <div>
+        <h1>{user.username}'s Profile</h1>
+        <button onClick={updateUser}>Confirm</button>
+      </div>
     </div>
   );
 };
