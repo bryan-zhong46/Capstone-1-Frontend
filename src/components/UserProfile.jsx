@@ -25,7 +25,7 @@ const UserProfile = ({ user }) => {
   const updateUser = async () => {
     if (isUser) {
       try {
-        await axios.patch(`${API_URL}/api/users/1`, userData);
+        await axios.patch(`${API_URL}/api/users/${id}`, userData);
       } catch (error) {
         console.log(error);
       }
