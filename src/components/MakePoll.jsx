@@ -55,13 +55,17 @@ export default function MakePoll({ setUser }) {
       return;
     }
 
+    // axios call to polls api
     try {
       await axios.post(`${API_URL}/api/polls`, pollData);
+      console.log(pollData);
       console.log("Poll created successfully");
     } catch (error) {
       console.error(error);
       console.log("Poll creation failed");
     }
+
+    // TODO axios call to options api
   }
 
   function handleTextChange(e) {
@@ -88,10 +92,13 @@ export default function MakePoll({ setUser }) {
   }
 
   function handleCheckboxChange(e) {
+    console.log("Changing auth requirement.");
+    console.log(e.target.checked);
     setPollData({
       ...pollData,
       req_auth: e.target.checked,
     });
+    console.log("REQ_AUTH", pollData.req_auth);
   }
 
   return (
@@ -143,7 +150,7 @@ export default function MakePoll({ setUser }) {
             type="checkbox"
             id="req_auth"
             name="req_auth"
-            value={pollData.req_auth}
+            checked={pollData.req_auth}
             onChange={handleCheckboxChange}
           />
         </div>
