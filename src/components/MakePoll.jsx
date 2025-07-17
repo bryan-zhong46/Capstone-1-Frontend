@@ -18,6 +18,8 @@ export default function MakePoll({ setUser }) {
   const [pollData, setPollData] = useState({
     title: "",
     description: "",
+    req_auth: false,
+    expiration: "2025-07-17",
   });
   const [errors, setErrors] = useState({});
   // const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +64,7 @@ export default function MakePoll({ setUser }) {
     }
   }
 
-  function handleChange(e) {
+  function handleTextChange(e) {
     const { name, value } = e.target;
     setPollData((prev) => ({
       ...prev,
@@ -78,6 +80,20 @@ export default function MakePoll({ setUser }) {
     }
   }
 
+  function handleDateChange(e) {
+    setPollData({
+      ...pollData,
+      expiration: e.target.value,
+    });
+  }
+
+  function handleCheckboxChange(e) {
+    setPollData({
+      ...pollData,
+      req_auth: e.target.checked,
+    });
+  }
+
   return (
     <div>
       <h1>Make a Poll</h1>
@@ -89,7 +105,7 @@ export default function MakePoll({ setUser }) {
             id="title"
             name="title"
             value={pollData.title}
-            onChange={handleChange}
+            onChange={handleTextChange}
             className={errors.title ? "error" : ""}
           />
           {errors.title && <span className="error-text">{errors.title}</span>}
@@ -101,7 +117,7 @@ export default function MakePoll({ setUser }) {
             id="description"
             name="description"
             value={pollData.description}
-            onChange={handleChange}
+            onChange={handleTextChange}
             className={errors.description ? "error" : ""}
           ></textarea>
           {errors.description && (
@@ -116,31 +132,33 @@ export default function MakePoll({ setUser }) {
             id="exp-date"
             name="exp-date"
             value={pollData.expiration}
-            onChange={handleChange}
+            onChange={handleDateChange}
             className={errors.expiration ? "error" : ""}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="auth_req">Require Authentication?</label>
+          <label htmlFor="req_auth">Require Authentication?</label>
           <input
             type="checkbox"
-            id="auth_req"
-            name="auth_req"
-            value={pollData.auth_req}
-            onChange={handleChange}
-            className={errors.auth_req ? "error" : ""}
+            id="req_auth"
+            name="req_auth"
+            value={pollData.req_auth}
+            onChange={handleCheckboxChange}
           />
         </div>
 
-        <MakePollOptions poll={poll}/>
+        <MakePollOptions />
 
         <div className="button-container">
+          <button type="button">Save Draft</button>
           <button type="submit">Publish Poll</button>
         </div>
       </form>
-      <p>Poll Title: {pollData.title}</p> <br></br>
+      <p>Poll Title: {pollData.title}</p>
       <p>Poll Description: {pollData.description}</p>
+      <p>Requires auth?: {pollData.req_auth}</p>
+      <p>Expiration Date: {pollData.expiration}</p>
     </div>
   );
 }
