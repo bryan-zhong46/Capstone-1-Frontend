@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
+import UserProfile from "./components/Profile/UserProfile";
 import MakePoll from "./components/MakePoll";
 import { API_URL } from "./shared";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
@@ -29,6 +30,7 @@ const App = () => {
         withCredentials: true,
       });
       setUser(response.data.user);
+      console.log(response.data.user);
     } catch {
       console.log("Not authenticated");
       setUser(null);
@@ -118,6 +120,7 @@ const App = () => {
           <Route path="/make-poll" element={<MakePoll setUser={setUser} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/users/:id" element={<UserProfile user={user} />} />
         </Routes>
       </div>
     </div>
