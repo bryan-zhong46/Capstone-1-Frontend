@@ -2,11 +2,11 @@ import React from "react";
 import "./Search.css";
 
 const UserList = ({ users, text }) => {
-  const filteredUsers = users.filter((data) => {
+  const filteredUsers = users.filter((user) => {
     if (text === "") {
-      return data;
+      return user;
     } else {
-      return data.username.toLowerCase().includes(text.toLowerCase());
+      return user.username.toLowerCase().includes(text.toLowerCase());
     }
   });
 
