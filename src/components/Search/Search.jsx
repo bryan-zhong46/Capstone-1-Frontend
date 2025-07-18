@@ -25,7 +25,7 @@ const Search = ({ user }) => {
     };
 
     fetchAllUsers();
-  }, [users]);
+  }, []);
 
   const handleTextChange = (e) => {
     const textSearch = e.target.value;
