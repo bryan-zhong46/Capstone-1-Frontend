@@ -109,13 +109,13 @@ const UserProfile = ({ user }) => {
 
       <div className="user-profile-card">
         <div className="user-profile-title">
-          <h1>{user.username}'s Profile</h1>
+          <h1>{profileUser?.username}'s Profile</h1>
         </div>
 
         <div className="user-profile-body">
-          <p>Username: {user.username}</p>
-          <p>UserID: {user.id}</p>
-          <p>Email: {user.email}</p>
+          <p>Username: {profileUser?.username}</p>
+          <p>UserID: {profileUser?.id}</p>
+          <p>Email: {profileUser?.email}</p>
         </div>
         <NavLink to="./">View Polls</NavLink>
       </div>
