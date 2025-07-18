@@ -2,12 +2,12 @@ import React, { useState } from "react";
 
 let nextId = 0;
 
-export default function MakePollOptions() {
-  const [pollOptions, setPollOptions] = useState([]);
-  const [newOption, setNewOption] = useState("");
+export default function MakePollOptions({ pollOptions, setPollOptions, newOption, setNewOption }) {
+  // const [pollOptions, setPollOptions] = useState([]);
+  // const [newOption, setNewOption] = useState("");
 
   function handleAddOption() {
-    setPollOptions([...pollOptions, { id: nextId++, text: newOption }]);
+    setPollOptions([...pollOptions, { id: nextId++, option_text: newOption }]);
     setNewOption("");
   }
 
