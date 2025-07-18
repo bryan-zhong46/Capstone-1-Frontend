@@ -9,7 +9,7 @@ import MakePollOptions from "./MakePollOptions";
  * A user can provide the following properties:
  * - title: string (required)
  * - description: string (required)
- * - options: array of strings (required, at least two options)
+ * - options: array of objects like {id, option_text, poll_id} (required, at least two options)
  * - expirationDate: date (required)
  */
 
@@ -22,6 +22,13 @@ export default function MakePoll({ setUser }) {
     auth_required: false,
     expiration: "2025-07-17",
   });
+
+  // State to hold poll options data to be passed down to MakePollOptions component
+  const [pollOptions, setPollOptions] = useState([]);
+  
+  // State to hold text of the options currently being created, to be passed down to MakePollOptions component
+  const [newOption, setNewOption] = useState("");
+
   const [errors, setErrors] = useState({});
   // const [isLoading, setIsLoading] = useState(false);
   // const navigate = useNavigate();
@@ -58,15 +65,28 @@ export default function MakePoll({ setUser }) {
 
     // axios call to polls api
     try {
-      await axios.post(`${API_URL}/api/polls`, pollData);
-      console.log(pollData);
+      const response = await axios.post(`${API_URL}/api/polls`, pollData);
+      console.log("POLLDATA", pollData);
       console.log("Poll created successfully");
+      const new_poll_id = response.data.poll_id; // save the poll_id of the poll that was just created
+      console.log("POLL ID", new_poll_id);
+      setPollOptions(pollOptions.map(option => ({ ...option, poll_id: new_poll_id })));
+      console.log("POLLOPTIONS", pollOptions);
     } catch (error) {
       console.error(error);
       console.log("Poll creation failed");
     }
 
-    // TODO axios call to options api
+    // axios call to options api
+    // try {
+    //   const response = await axios.post(`${API_URL}/api/options`, pollOptions)
+    //   console.log("RESPONSE", response.date)
+    //   console.log(`Options for poll ${new_poll_id} added succesfully.`)
+    // } catch (error) {
+    //   console.error(error);
+    //   console.log(`Failed to add options for poll ${new_poll_id}.`)
+    // }
+
   }
 
   function handleTextChange(e) {
@@ -156,7 +176,12 @@ export default function MakePoll({ setUser }) {
           />
         </div>
 
-        <MakePollOptions />
+        <MakePollOptions 
+          pollOptions={pollOptions}
+          setPollOptions={setPollOptions}
+          newOption={newOption}
+          setNewOption={setNewOption}
+        />
 
         <div className="button-container">
           <button type="button">Save Draft</button>
