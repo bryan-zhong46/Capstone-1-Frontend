@@ -7,20 +7,17 @@ import { useParams, NavLink } from "react-router-dom";
 
 const UserProfile = ({ user }) => {
   const { id } = useParams();
-
   const userID = Number(id); //convert id from string to number
 
-  const [updatedUser, setUpdatedUser] = useState(user);
+  const [profileUser, setProfileUser] = useState(null);
   const [isUser, setIsUser] = useState(false);
   const [userData, setUserData] = useState({
     isAdmin: user.isAdmin,
     isDisabled: user.isDisabled,
   });
 
-  //For admin users, add the ability to disable an account, or make a account admin
-
   const checkUser = () => {
-    if (user?.id == userID) {
+    if (user?.id === userID) {
       setIsUser(true);
       console.log("Same user");
     } else {
@@ -29,17 +26,27 @@ const UserProfile = ({ user }) => {
   };
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/users/${id}`);
+        setProfileUser(response.data);
+      } catch (err) {
+        console.error("Error fetching student:", err);
+      }
+    };
+
+    fetchUser();
     checkUser();
-  }, [userID]);
+  }, [userID, user]);
 
   useEffect(() => {
-    if (updatedUser) {
+    if (profileUser) {
       setUserData({
-        isAdmin: updatedUser.isAdmin,
-        isDisabled: updatedUser.isDisabled,
+        isAdmin: profileUser.isAdmin,
+        isDisabled: profileUser.isDisabled,
       });
     }
-  }, [updatedUser]);
+  }, [profileUser]);
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
@@ -58,7 +65,7 @@ const UserProfile = ({ user }) => {
       );
       const refreshed = await axios.get(`${API_URL}/api/users/${id}`);
       console.log(refreshed.data);
-      setUpdatedUser(refreshed.data);
+      setProfileUser(refreshed.data);
       console.log("Status: ", response.status);
     } catch (error) {
       console.error(error);
@@ -67,6 +74,7 @@ const UserProfile = ({ user }) => {
 
   return (
     <div>
+      {profileUser?.isDisabled ? <p>Account is disabled</p> : <></>}
       {isUser || user.isAdmin ? (
         <div>
           {user.isAdmin ? (
