@@ -118,11 +118,11 @@ const UserProfile = ({ user }) => {
 
         <div className="user-profile-body">
           <p>Username: {profileUser?.username}</p>
-          <p>UserID: {profileUser?.id}</p>
+          <p>UserID: {profileUser?.user_id}</p>
           <p>Email: {profileUser?.email}</p>
         </div>
-        <NavLink to="./">View Polls</NavLink>
       </div>
+      <NavLink to="./">View Polls</NavLink>
     </div>
   );
 };
