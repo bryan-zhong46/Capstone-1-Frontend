@@ -17,6 +17,7 @@ const NavBar = ({ user, onLogout, auth0User }) => {
       <div className="nav-links">
         {user ? (
           <div className="user-section">
+            <Link to={`/users/${user.id}`}>Profile</Link>
             <span className="username">Welcome, {user.username}!</span>
             <img
               src={auth0User?.picture}
