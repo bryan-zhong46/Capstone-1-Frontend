@@ -21,6 +21,13 @@ const NavBar = ({ user, onLogout, auth0User }) => {
             <button onClick={onLogout} className="logout-btn">
               Logout
             </button>
+            {user.isAdmin ? (
+              <>
+                <Link to={`/search`}>Search</Link>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         ) : (
           <div className="auth-links">
