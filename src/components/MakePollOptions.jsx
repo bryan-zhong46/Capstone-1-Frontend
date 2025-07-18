@@ -22,7 +22,7 @@ export default function MakePollOptions({ pollOptions, setPollOptions, newOption
       <ul>
         {pollOptions.map((option) => (
           <li key={option.id}>
-            {option.text}{" "}
+            {option.option_text}{" "}
             <button
               type="button"
               onClick={() => {
