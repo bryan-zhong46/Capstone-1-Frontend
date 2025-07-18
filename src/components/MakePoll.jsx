@@ -13,7 +13,7 @@ import MakePollOptions from "./MakePollOptions";
  * - expirationDate: date (required)
  */
 
-export default function MakePoll({ setUser }) {
+export default function MakePoll({ user }) {
   // State to hold poll data
   const [pollData, setPollData] = useState({
     title: "",
