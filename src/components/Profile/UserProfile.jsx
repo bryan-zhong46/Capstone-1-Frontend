@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import "./NavBarStyles.css";
+import "../NavBarStyles.css";
 import "./Profile.css";
-import { API_URL } from "../shared";
+import { API_URL } from "../../shared";
 import axios from "axios";
 import { useParams, NavLink } from "react-router-dom";
 
@@ -74,7 +74,11 @@ const UserProfile = ({ user }) => {
 
   return (
     <div>
-      {profileUser?.isDisabled ? <p>Account is disabled</p> : <></>}
+      {profileUser?.isDisabled ? (
+        <p style={{ color: "red" }}>Account is disabled</p>
+      ) : (
+        <></>
+      )}
       {isUser || user.isAdmin ? (
         <div>
           {user.isAdmin ? (
