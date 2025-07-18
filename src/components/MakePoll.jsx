@@ -17,8 +17,9 @@ export default function MakePoll({ setUser }) {
   // State to hold poll data
   const [pollData, setPollData] = useState({
     title: "",
+    creator_id: 0, // placeholder value
     description: "",
-    req_auth: false,
+    auth_required: false,
     expiration: "2025-07-17",
   });
   const [errors, setErrors] = useState({});
@@ -96,9 +97,9 @@ export default function MakePoll({ setUser }) {
     console.log(e.target.checked);
     setPollData({
       ...pollData,
-      req_auth: e.target.checked,
+      auth_required: e.target.checked,
     });
-    console.log("REQ_AUTH", pollData.req_auth);
+    console.log("auth_required", pollData.auth_required);
   }
 
   return (
@@ -145,12 +146,12 @@ export default function MakePoll({ setUser }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="req_auth">Require Authentication?</label>
+          <label htmlFor="auth_required">Require Authentication?</label>
           <input
             type="checkbox"
-            id="req_auth"
-            name="req_auth"
-            checked={pollData.req_auth}
+            id="auth_required"
+            name="auth_required"
+            checked={pollData.auth_required}
             onChange={handleCheckboxChange}
           />
         </div>
@@ -164,7 +165,7 @@ export default function MakePoll({ setUser }) {
       </form>
       <p>Poll Title: {pollData.title}</p>
       <p>Poll Description: {pollData.description}</p>
-      <p>Requires auth?: {pollData.req_auth}</p>
+      <p>Requires auth?: {pollData.auth_required}</p>
       <p>Expiration Date: {pollData.expiration}</p>
     </div>
   );
