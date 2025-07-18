@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../NavBarStyles.css";
 import "./Search.css";
+import UserList from "./UserList";
 
 const Search = ({ user }) => {
   const [users, setUsers] = useState([]);
+  const [text, setText] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,18 +27,16 @@ const Search = ({ user }) => {
     fetchAllUsers();
   }, [users]);
 
+  const handleTextChange = (e) => {
+    const textSearch = e.target.value;
+    setText(textSearch);
+  };
+
   return (
     <>
-      <input type="text" placeholder="Search.." />
-      <div className="users-list">
-        <div className="users-list-card">
-          {users.map((user) => (
-            <div key={user.id} className="user-list-item">
-              <span>{user.username}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <input type="text" placeholder="Search.." onChange={handleTextChange} />
+      <p>List of users: </p>
+      <UserList users={users} text={text} />
     </>
   );
 };
