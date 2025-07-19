@@ -1,0 +1,16 @@
+.user-profile-card {
+  background-color: grey;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  gap: 20px;
+  width: 350px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.user-profile-title {
+}
+
+.user-profile-body {
+}

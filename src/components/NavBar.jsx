@@ -2,17 +2,27 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./NavBarStyles.css";
 
-const NavBar = ({ user, onLogout }) => {
+const NavBar = ({ user, onLogout, auth0User }) => {
   return (
     <nav className="navbar">
       <div className="nav-brand">
-        <Link to="/">Capstone I</Link>
+        <div>
+          <Link to="/">Capstone I</Link>
+        </div>
+        <div>
+          <Link to="/make-poll">Make a Poll</Link>
+        </div>
       </div>
 
       <div className="nav-links">
         {user ? (
           <div className="user-section">
+            <Link to={`/users/${user.id}`}>Profile</Link>
             <span className="username">Welcome, {user.username}!</span>
+            <img
+              src={auth0User?.picture}
+              className="auth-profile-picture"
+            ></img>
             <button onClick={onLogout} className="logout-btn">
               Logout
             </button>
