@@ -34,9 +34,13 @@ const Search = ({ user }) => {
 
   return (
     <>
-      <input type="text" placeholder="Search.." onChange={handleTextChange} />
-      <p>List of users: </p>
-      <UserList users={users} text={text} />
+      <div className="search-bar">
+        <input type="text" placeholder="Search.." onChange={handleTextChange} />
+      </div>
+      <div className="search-content">
+        <span>List of Users:</span>
+        <UserList users={users} text={text} />
+      </div>
     </>
   );
 };
