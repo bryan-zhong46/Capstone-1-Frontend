@@ -122,7 +122,7 @@ const App = () => {
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/users/:id" element={<UserProfile user={user} />} />
-          <Route path="/vote/:id" element={<VoteForm user={user} />} /> 
+          <Route path="/vote" element={<VoteForm user={user} />} /> 
         </Routes>
       </div>
     </div>
