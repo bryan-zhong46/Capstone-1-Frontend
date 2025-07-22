@@ -16,6 +16,7 @@ import MyPolls from "./components/MyPolls";
 import { API_URL } from "./shared";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { auth0Config } from "./auth0-config";
+import Search from "./components/Search/Search";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -82,7 +83,7 @@ const App = () => {
         {},
         {
           withCredentials: true,
-        },
+        }
       );
       setUser(null);
 
@@ -125,6 +126,7 @@ const App = () => {
           {user && user.id ? (
             <Route path="/my-polls" element={<MyPolls loggedInUser={user} />} />
           ) : null}
+          <Route path="/search" element={<Search user={user} />} />
         </Routes>
       </div>
     </div>
