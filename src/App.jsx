@@ -124,7 +124,7 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
           <Route path="/users/:id" element={<UserProfile user={user} />} />
           <Route path="/search" element={<Search user={user} />} />
-          <Route path="/users/:id/polls/:id" element={<Voting />} />
+          <Route path="/polls/:id" element={<Voting />} />
         </Routes>
       </div>
     </div>
