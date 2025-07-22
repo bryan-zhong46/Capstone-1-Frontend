@@ -87,7 +87,7 @@ const UserProfile = ({ user }) => {
   if (loading) return <p>Loading user...</p>;
 
   return (
-    <div>
+    <div className="profile-container">
       {profileUser?.isDisabled ? (
         <p style={{ color: "red" }}>Account is disabled</p>
       ) : (
@@ -96,25 +96,34 @@ const UserProfile = ({ user }) => {
       {isUser || user.isAdmin ? (
         <div>
           {user.isAdmin ? (
-            <div>
-              <form>
-                <input
-                  type="checkbox"
-                  name="isAdmin"
-                  checked={userData.isAdmin}
-                  onChange={handleCheckboxChange}
-                />
-                <label>Make this user Admin?</label>
-                <input
-                  type="checkbox"
-                  name="isDisabled"
-                  checked={userData.isDisabled}
-                  onChange={handleCheckboxChange}
-                />
-                <label>Disable this account?</label>
-              </form>
-              <button onClick={handleSave}>Save</button>
-            </div>
+            <>
+              <label>Admin Panel</label>
+              <div className="admin-controls">
+                <form className="admin-form">
+                  <div className="checkbox-group">
+                    <input
+                      type="checkbox"
+                      name="isAdmin"
+                      checked={userData.isAdmin}
+                      onChange={handleCheckboxChange}
+                    />
+                    <label>Make this user Admin?</label>
+                  </div>
+                  <div className="checkbox-group">
+                    <input
+                      type="checkbox"
+                      name="isDisabled"
+                      checked={userData.isDisabled}
+                      onChange={handleCheckboxChange}
+                    />
+                    <label>Disable this account?</label>
+                  </div>
+                </form>
+                <button onClick={handleSave} className="save-button">
+                  Save
+                </button>
+              </div>
+            </>
           ) : (
             <></>
           )}
@@ -127,7 +136,7 @@ const UserProfile = ({ user }) => {
 
       <div className="user-profile-card">
         <div className="user-profile-title">
-          <h1>{profileUser?.username}'s Profile</h1>
+          <h1>{profileUser?.username}</h1>
         </div>
 
         <div className="user-profile-body">

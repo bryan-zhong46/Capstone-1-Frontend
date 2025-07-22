@@ -17,7 +17,9 @@ const NavBar = ({ user, onLogout, auth0User }) => {
       <div className="nav-links">
         {user ? (
           <div className="user-section">
-            <Link to={`/users/${user.id}`}>Profile</Link>
+            <Link to={`/users/${user.id}`} className="nav-link">
+              Profile
+            </Link>
             <span className="username">Welcome, {user.username}!</span>
             <img
               src={auth0User?.picture}
@@ -26,6 +28,16 @@ const NavBar = ({ user, onLogout, auth0User }) => {
             <button onClick={onLogout} className="logout-btn">
               Logout
             </button>
+
+            {user.isAdmin ? (
+              <>
+                <Link to={`/search`} className="nav-link">
+                  Search
+                </Link>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         ) : (
           <div className="auth-links">
