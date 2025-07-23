@@ -23,24 +23,9 @@ const MyPolls = ({ loggedInUser }) => {
       setLoading(true);
       setError(null);
       try {
-        /*
-        const [publishedRes, draftsRes, participatedRes] = await Promise.all([
-          axios.get(`${API_URL}/api/polls/published`, {
-            withCredentials: true,
-          }),
-          axios.get(`${API_URL}/api/polls/drafts`, { withCredentials: true }),
-          axios.get(`${API_URL}/api/polls/participated`, {
-            withCredentials: true,
-          }),
-        ]);*/
-
         const response = await axios.get(`${API_URL}/api/polls/`);
         setPolls(response.data);
         console.log(response.data);
-        /*
-        setPublishedPolls(publishedRes.data);
-        setDraftPolls(draftsRes.data);
-        setParticipatedPolls(participatedRes.data);*/
       } catch (err) {
         console.error("Failed to fetch polls:", err);
         setError(err.response?.data?.message || "Failed to fetch polls.");

@@ -20,7 +20,7 @@ const Voting = () => {
     };
 
     fetchPoll();
-  }, [pollID, poll]);
+  }, []);
 
   return <div></div>;
 };
