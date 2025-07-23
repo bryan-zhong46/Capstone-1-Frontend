@@ -23,7 +23,9 @@ const MyPolls = ({ loggedInUser }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${API_URL}/api/polls/`);
+        const response = await axios.get(
+          `${API_URL}/api/polls/user/${loggedInUser.id}`
+        );
         setPolls(response.data);
         console.log(response.data);
       } catch (err) {
@@ -41,7 +43,6 @@ const MyPolls = ({ loggedInUser }) => {
     return <div className="my-polls-container">Loading your polls...</div>;
   if (error)
     return <div className="my-polls-container error">Error: {error}</div>;
-
   return (
     <div className="my-polls-container">
       <h2>Your Polls</h2>
