@@ -2,12 +2,23 @@ import React, { useState } from "react";
 
 let nextId = 0;
 
-export default function MakePollOptions({ pollOptions, setPollOptions, newOption, setNewOption }) {
+export default function MakePollOptions({
+  pollOptions,
+  setPollOptions,
+  // pollData,
+  // setPollData,
+  newOption,
+  setNewOption,
+}) {
   // const [pollOptions, setPollOptions] = useState([]);
   // const [newOption, setNewOption] = useState("");
 
   function handleAddOption() {
     setPollOptions([...pollOptions, { id: nextId++, option_text: newOption }]);
+    // setPollData({
+    //   ...pollData,
+    //   pollOptions: [...pollOptions, { id: nextId++, option_text: newOption }],
+    // });
     setNewOption("");
   }
 
@@ -27,6 +38,9 @@ export default function MakePollOptions({ pollOptions, setPollOptions, newOption
               type="button"
               onClick={() => {
                 setPollOptions(pollOptions.filter((o) => o.id !== option.id));
+                // setPollData(
+                //   pollData.pollOptions.filter((o) => o.id !== option.id),
+                // );
               }}
             >
               Delete
