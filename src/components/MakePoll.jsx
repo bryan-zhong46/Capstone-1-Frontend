@@ -18,8 +18,9 @@ import MakePollOptions from "./MakePollOptions";
 
 export default function MakePoll({ user, isEditing }) {
   // Get the poll_id of the poll being edited from the url
-  // const params = useParams();
-  // const poll_id = Number(params.id);
+  const params = useParams();
+  const poll_id = Number(params.id);
+  console.log("POLL ID FROM URL", poll_id);
 
   // State to hold poll data
   const [pollData, setPollData] = useState({
@@ -42,32 +43,30 @@ export default function MakePoll({ user, isEditing }) {
   // const navigate = useNavigate();
 
   // TODO Fetch data of a draft poll
-  // async function fetchDraft(poll_id) {
-  //   if (isEditing) {
-  //     try {
-  //       // get poll data of the draft poll
-  //       const dPollResponse = await axios.get(
-  //         `${API_URL}/api/polls/${poll_id}`,
-  //       );
-  //       console.log("DRAFT POLL RESPONSE", dPollResponse);
-  //       // get all poll options associated with the draft poll
-  //       const dOptionsResponse = await axios.get(
-  //         `${API_URL}/api/polls/${poll_id}/options`,
-  //       );
-  //       const dPollData = dPollResponse.data;
-  //       const dPollOptions = dOptionsResponse.data;
-  //       setPollData(dPollData);
-  //       setPollOptions(dPollOptions);
-  //       console.log("DRAFT POLL DATA: ", dPollData);
-  //       console.log("DRAFT POLL OPTIONS: ", dPollOptions);
-  //     } catch (error) {
-  //       console.log("Failed to fetch draft data");
-  //       console.error(error);
-  //     }
-  //   } else {
-  //     return;
-  //   }
-  // }
+  async function fetchDraft(poll_id) {
+    // if (isEditing) {
+    try {
+      // get poll data of the draft poll
+      const dPollResponse = await axios.get(`${API_URL}/api/polls/${poll_id}`);
+      console.log("DRAFT POLL RESPONSE", dPollResponse);
+      // get all poll options associated with the draft poll
+      const dOptionsResponse = await axios.get(
+        `${API_URL}/api/polls/${poll_id}/options`,
+      );
+      console.log(dOptionsResponse);
+      const dPollData = dPollResponse.data;
+      const dPollOptions = dOptionsResponse.data;
+      setPollData(dPollData);
+      setPollOptions(dPollOptions);
+      console.log("DRAFT POLL DATA: ", dPollData);
+      console.log("DRAFT POLL OPTIONS: ", dPollOptions);
+    } catch (error) {
+      console.log("Failed to fetch draft data");
+      console.error(error);
+    }
+    // } else {
+    //   return;
+  }
 
   // Ensure that the form has a title and at least two options
   function validateForm() {
@@ -100,7 +99,7 @@ export default function MakePoll({ user, isEditing }) {
         pollData,
         pollOptions,
       });
-      console.log("REPONSE", response);
+      console.log("RESPONSE", response);
       console.log("Poll saved successfully");
     } catch (error) {
       console.error(error);
@@ -123,6 +122,7 @@ export default function MakePoll({ user, isEditing }) {
         pollOptions,
       });
       console.log("POLLDATA", pollData);
+      console.log("POLL OPTIONS", pollOptions);
       console.log("Poll created successfully");
       console.log("POLL RESPONSE", response);
     } catch (error) {
@@ -190,9 +190,9 @@ export default function MakePoll({ user, isEditing }) {
     // console.log("auth_required", pollData.auth_required);
   }
 
-  // useEffect(() => {
-  //   fetchDraft(poll_id);
-  // }, []);
+  useEffect(() => {
+    fetchDraft(poll_id);
+  }, []);
 
   return (
     <div>
