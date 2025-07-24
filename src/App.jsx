@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import axios from "axios";
 import "./AppStyles.css";
 import NavBar from "./components/NavBar";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
@@ -13,10 +13,17 @@ import MakePoll from "./components/MakePoll";
 import PollLists from "./components/PollLists";
 import UserPolls from "./components/UserPolls";
 import MyPolls from "./components/MyPolls";
+import PollResults from "./components/PollResults";
 import { API_URL } from "./shared";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { auth0Config } from "./auth0-config";
 import Search from "./components/Search/Search";
+
+// Wrapper component to extract pollId from URL
+function PollResultsWrapper() {
+  const { pollId } = useParams();
+  return <PollResults pollId={pollId} />;
+}
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -126,6 +133,7 @@ const App = () => {
           {user && user.id ? (
             <Route path="/my-polls" element={<MyPolls loggedInUser={user} />} />
           ) : null}
+          <Route path="/polls/:pollId/results" element={<PollResultsWrapper />} />
           <Route path="/search" element={<Search user={user} />} />
         </Routes>
       </div>
