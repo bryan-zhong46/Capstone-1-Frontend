@@ -16,11 +16,11 @@ import MakePollOptions from "./MakePollOptions";
 // const today = new Date();
 // const todaysDateString = today.toDateString();
 
-export default function MakePoll({ user, isEditing }) {
+export default function MakePoll({ user }) {
   // Get the poll_id of the poll being edited from the url
   const params = useParams();
   const poll_id = Number(params.id);
-  console.log("POLL ID FROM URL", poll_id);
+  // console.log("POLL ID FROM URL", poll_id);
 
   // State to hold poll data
   const [pollData, setPollData] = useState({
@@ -44,7 +44,6 @@ export default function MakePoll({ user, isEditing }) {
 
   // TODO Fetch data of a draft poll
   async function fetchDraft(poll_id) {
-    // if (isEditing) {
     try {
       // get poll data of the draft poll
       const dPollResponse = await axios.get(`${API_URL}/api/polls/${poll_id}`);
@@ -64,8 +63,6 @@ export default function MakePoll({ user, isEditing }) {
       console.log("Failed to fetch draft data");
       console.error(error);
     }
-    // } else {
-    //   return;
   }
 
   // Ensure that the form has a title and at least two options
@@ -93,18 +90,50 @@ export default function MakePoll({ user, isEditing }) {
   async function handleSave(e) {
     e.preventDefault();
 
-    // axios call to polls API
-    try {
-      const response = await axios.post(`${API_URL}/api/polls`, {
-        pollData,
-        pollOptions,
-      });
-      console.log("RESPONSE", response);
-      console.log("Poll saved successfully");
-    } catch (error) {
-      console.error(error);
-      console.log("Failed to save poll");
+    // If a poll ID was provided in the URL, then use the patch route to update the existing poll.
+    // Otherwise, use a post route to save/publish a new poll.
+    if (isNaN(poll_id)) {
+      // no poll id provided, creating a new draft poll
+      // axios POST call to polls API
+      try {
+        const response = await axios.post(`${API_URL}/api/polls`, {
+          pollData,
+          pollOptions,
+        });
+        console.log("RESPONSE", response);
+        console.log("New poll saved successfully");
+      } catch (error) {
+        console.error(error);
+        console.log("Failed to save poll");
+      }
+    } else {
+      // poll id was provided, updating a draft poll and saving the changes
+      // axios PATCH call to polls API
+      try {
+        const response = await axios.patch(`${API_URL}/api/polls/${poll_id}`, {
+          pollData,
+          pollOptions,
+        });
+        console.log("RESPONSE", response);
+        console.log("Poll updated and saved successfully");
+      } catch (error) {
+        console.error(error);
+        console.log("Failed to save poll");
+      }
     }
+
+    //   // axios call to polls API
+    //   try {
+    //     const response = await axios.post(`${API_URL}/api/polls`, {
+    //       pollData,
+    //       pollOptions,
+    //     });
+    //     console.log("RESPONSE", response);
+    //     console.log("Poll saved successfully");
+    //   } catch (error) {
+    //     console.error(error);
+    //     console.log("Failed to save poll");
+    //   }
   }
 
   // Handle poll publication
@@ -115,20 +144,56 @@ export default function MakePoll({ user, isEditing }) {
       return;
     }
 
-    // axios call to polls api
-    try {
-      const response = await axios.post(`${API_URL}/api/polls/published`, {
-        pollData,
-        pollOptions,
-      });
-      console.log("POLLDATA", pollData);
-      console.log("POLL OPTIONS", pollOptions);
-      console.log("Poll created successfully");
-      console.log("POLL RESPONSE", response);
-    } catch (error) {
-      console.error(error);
-      console.log("Poll creation failed");
+    // If a poll ID was provided in the URL, then use the patch route to update the existing poll.
+    // Otherwise, use a post route to save/publish a new poll.
+    if (isNaN(poll_id)) {
+      // no poll_id provided, publishing a brand new poll
+      // axios POST call to polls API
+      try {
+        const response = await axios.post(`${API_URL}/api/polls/published`, {
+          pollData,
+          pollOptions,
+        });
+        console.log("POLLDATA", pollData);
+        console.log("POLL OPTIONS", pollOptions);
+        console.log("Poll created successfully");
+        console.log("POLL RESPONSE", response);
+      } catch (error) {
+        console.error(error);
+        console.log("Poll creation failed");
+      }
+    } else {
+      // poll_id was provided, publishing a poll that was in draft mode
+      // axios PATCH call to polls API
+      try {
+        const response = await axios.patch(`${API_URL}/api/polls/published`, {
+          pollData,
+          pollOptions,
+        });
+        console.log("POLLDATA", pollData);
+        console.log("POLL OPTIONS", pollOptions);
+        console.log("Poll created successfully");
+        console.log("POLL RESPONSE", response);
+      } catch (error) {
+        console.error(error);
+        console.log("Poll creation failed");
+      }
     }
+
+    // // axios call to polls api
+    // try {
+    //   const response = await axios.post(`${API_URL}/api/polls/published`, {
+    //     pollData,
+    //     pollOptions,
+    //   });
+    //   console.log("POLLDATA", pollData);
+    //   console.log("POLL OPTIONS", pollOptions);
+    //   console.log("Poll created successfully");
+    //   console.log("POLL RESPONSE", response);
+    // } catch (error) {
+    //   console.error(error);
+    //   console.log("Poll creation failed");
+    // }
     // const new_poll_id = response.data.poll_id; // save the poll_id of the poll that was just created
     // console.log("POLL ID", new_poll_id);
 
