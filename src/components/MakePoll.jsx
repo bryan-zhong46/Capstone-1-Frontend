@@ -78,9 +78,9 @@ export default function MakePoll({ user, isEditing }) {
       newErrors.title = "Title is required";
     }
     // Check for description
-    if (!pollData.description) {
-      newErrors.description = "Description is required";
-    }
+    // if (!pollData.description) {
+    //   newErrors.description = "Description is required";
+    // }
 
     // TODO: Check for at least two poll options
 
@@ -116,12 +116,9 @@ export default function MakePoll({ user, isEditing }) {
       return;
     }
 
-    // change poll status to "published"
-    setPollData({ ...pollData, poll_status: "published" });
-
     // axios call to polls api
     try {
-      const response = await axios.post(`${API_URL}/api/polls`, {
+      const response = await axios.post(`${API_URL}/api/polls/published`, {
         pollData,
         pollOptions,
       });
