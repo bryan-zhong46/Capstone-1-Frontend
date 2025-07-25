@@ -46,8 +46,20 @@ const Voting = ({ user }) => {
       }
     };
 
+    const fetchBallots = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/api/options/polls/${id}/results`
+        );
+        setBallotData(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchPoll();
     fetchOptions();
+    fetchBallots();
   }, [pollID]);
 
   // Publishing a poll
@@ -80,6 +92,8 @@ const Voting = ({ user }) => {
   // Saving Ballots
   const handleSaveRank = () => {
     console.log(ballotData);
+
+    // check if ballots already exist. if they do then patch. if not then post.
 
     ballotData.forEach(async (ballot) => {
       try {
