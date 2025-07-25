@@ -14,52 +14,57 @@ const Voting = ({ user }) => {
   });
   const [ballotData, setBallotData] = useState([]);
 
+  const [ballotsExist, setBallotsExist] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // Initialize ballot data with empty entries for each option
   useEffect(() => {
-    if (options.length > 0) {
-      const initialBallots = options.map((option) => ({
-        option_id: option.options_id,
-        rank: "",
-      }));
-      setBallotData(initialBallots);
+    if (!ballotsExist) {
+      if (options.length > 0) {
+        const initialBallots = options.map((option) => ({
+          option_id: option.options_id,
+          rank: "",
+          poll_id: pollID,
+          user_id: user.id,
+        }));
+        setBallotData(initialBallots);
+      }
     }
-  }, [options]);
+    console.log("initalizing ballot with empty");
+  }, [options, ballotsExist]);
 
+  // fetching
   useEffect(() => {
-    const fetchPoll = async () => {
+    if (!pollID) return;
+    const fetchAllData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/polls/${id}`);
-        setPoll(response.data);
-        setStatusData({ poll_status: response.data.poll_status });
-      } catch (err) {
-        console.error(err);
-      }
-    };
+        // fetch poll
+        const pollRes = await axios.get(`${API_URL}/api/polls/${id}`);
+        setPoll(pollRes.data);
+        setStatusData({ poll_status: pollRes.data.poll_status });
 
-    const fetchOptions = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/options/polls/${id}`);
-        setOptions(response.data);
-        console.log(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+        // fetch options
+        const optionRes = await axios.get(`${API_URL}/api/options/polls/${id}`);
+        setOptions(optionRes.data);
 
-    const fetchBallots = async () => {
-      try {
-        const response = await axios.get(
-          `${API_URL}/api/options/polls/${id}/results`
+        // fetch ballot
+        const ballotsRes = await axios.get(
+          `${API_URL}/api/polls/${id}/results`
         );
-        setBallotData(response.data);
+
+        if (ballotsRes.data && ballotsRes.data.length > 0) {
+          setBallotsExist(true);
+          setBallotData(ballotsRes.data);
+          console.log("Ballot exists");
+        }
       } catch (err) {
         console.error(err);
       }
     };
 
-    fetchPoll();
-    fetchOptions();
-    fetchBallots();
+    fetchAllData();
+    setIsLoaded(true);
+    console.log("fetching data");
   }, [pollID]);
 
   // Publishing a poll
@@ -80,6 +85,7 @@ const Voting = ({ user }) => {
 
   // Selecting a rank
   const handleRankChange = (optionId, rank) => {
+    console.log("handleRankChange:", { optionId, rank, pollID, user });
     setBallotData((prev) =>
       prev.map((ballot) =>
         ballot.option_id === optionId
@@ -92,14 +98,24 @@ const Voting = ({ user }) => {
   // Saving Ballots
   const handleSaveRank = () => {
     console.log(ballotData);
+    console.log(ballotsExist);
 
     // check if ballots already exist. if they do then patch. if not then post.
-
     ballotData.forEach(async (ballot) => {
       try {
-        //not working
-        const response = await axios.post(`${API_URL}/api/pollVotes/`, ballot);
-        console.log("Ranks saved:", response);
+        if (ballotsExist) {
+          const response = await axios.patch(
+            `${API_URL}/api/${ballot.pollvote_id}`,
+            ballot
+          );
+          console.log("Ballots patched:", response);
+        } else if (!ballotsExist) {
+          const response = await axios.post(
+            `${API_URL}/api/pollVotes/`,
+            ballot
+          );
+          console.log("Ballots posted:", response);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -108,6 +124,10 @@ const Voting = ({ user }) => {
 
   if (!poll) {
     return <p>Poll is not found</p>;
+  }
+
+  if (!isLoaded) {
+    return <p>Loading</p>;
   }
 
   return (
@@ -150,8 +170,10 @@ const Voting = ({ user }) => {
                     id={`${option.options_id}`}
                     name="rank"
                     value={
-                      ballotData.find((b) => b.option_id === option.options_id)
-                        ?.rank || ""
+                      isLoaded &&
+                      (ballotData.find((b) => b.option_id === option.options_id)
+                        ?.rank ||
+                        "")
                     }
                     onChange={(e) =>
                       handleRankChange(option.options_id, e.target.value)
