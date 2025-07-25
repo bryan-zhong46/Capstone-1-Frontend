@@ -65,11 +65,11 @@ const Voting = ({ user }) => {
     }
   };
 
-  const handleRankChange = (optionId, rank, pollId) => {
+  const handleRankChange = (optionId, rank) => {
     setBallotData((prev) =>
       prev.map((ballot) =>
         ballot.option_id === optionId
-          ? { ...ballot, rank: rank, poll_id: pollId, user_id: user.id }
+          ? { ...ballot, rank: rank, poll_id: pollID, user_id: user.id }
           : ballot
       )
     );
@@ -137,11 +137,7 @@ const Voting = ({ user }) => {
                         ?.rank || ""
                     }
                     onChange={(e) =>
-                      handleRankChange(
-                        option.options_id,
-                        e.target.value,
-                        pollID
-                      )
+                      handleRankChange(option.options_id, e.target.value)
                     }
                   >
                     <option value="" disabled>
