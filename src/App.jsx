@@ -128,7 +128,7 @@ const App = () => {
             <Route path="/my-polls" element={<MyPolls loggedInUser={user} />} />
           ) : null}
           <Route path="/search" element={<Search user={user} />} />
-          <Route path="/polls/:id" element={<Voting />} />
+          <Route path="/polls/:id" element={<Voting user={user} />} />
         </Routes>
       </div>
     </div>
