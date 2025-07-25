@@ -159,7 +159,6 @@ const Voting = ({ user }) => {
 
             <button>Close</button>
             <button onClick={handleSaveRank}>Save</button>
-            <button>Vote</button>
           </div>
         )}
 

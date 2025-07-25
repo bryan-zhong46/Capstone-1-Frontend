@@ -12,7 +12,18 @@ import { API_URL } from "../shared";
  * - expirationDate: date (required)
  */
 
+<<<<<<< Updated upstream
 export default function MakePoll({ setUser }) {
+=======
+// const today = new Date();
+// const todaysDateString = today.toDateString();
+
+export default function MakePoll({ user }) {
+  // Get the poll_id of the poll being edited from the url
+  // const params = useParams();
+  // const poll_id = Number(params.id);
+
+>>>>>>> Stashed changes
   // State to hold poll data
   const [pollData, setPollData] = useState({
     title: "",
