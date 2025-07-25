@@ -4,7 +4,7 @@ import { API_URL } from "../../shared";
 import axios from "axios";
 import "./Voting.css";
 
-const Voting = () => {
+const Voting = ({ user }) => {
   const { id } = useParams();
   const pollID = Number(id);
   const [poll, setPoll] = useState(null);
@@ -12,13 +12,18 @@ const Voting = () => {
   const [statusData, setStatusData] = useState({
     poll_status: null,
   });
-  const [ballotData, setBallotData] = useState({
-    poll_id: null,
-    user_id: null,
-    option_id: null,
-    rank: null,
-    isSubmitted: null,
-  });
+  const [ballotData, setBallotData] = useState([]);
+
+  // Initialize ballot data with empty entries for each option
+  useEffect(() => {
+    if (options.length > 0) {
+      const initialBallots = options.map((option) => ({
+        option_id: option.options_id,
+        rank: "",
+      }));
+      setBallotData(initialBallots);
+    }
+  }, [options]);
 
   useEffect(() => {
     const fetchPoll = async () => {
@@ -60,24 +65,28 @@ const Voting = () => {
     }
   };
 
-  const handleRankChange = (optionId, rank) => {
-    setBallotData((prev) => ({
-      ...prev,
-      [optionId]: rank,
-    }));
+  const handleRankChange = (optionId, rank, pollId) => {
+    setBallotData((prev) =>
+      prev.map((ballot) =>
+        ballot.option_id === optionId
+          ? { ...ballot, rank: rank, poll_id: pollId, user_id: user.id }
+          : ballot
+      )
+    );
   };
 
-  const handleSaveRank = async () => {
-    try {
-      //not working
-      const response = await axios.post(
-        `${API_URL}/api/pollVotes/${id}`,
-        ballotData
-      );
-      console.log("Ranks saved:", response);
-    } catch (err) {
-      console.error(err);
-    }
+  const handleSaveRank = () => {
+    console.log(ballotData);
+
+    ballotData.forEach(async (ballot) => {
+      try {
+        //not working
+        const response = await axios.post(`${API_URL}/api/pollVotes/`, ballot);
+        console.log("Ranks saved:", response);
+      } catch (err) {
+        console.error(err);
+      }
+    });
   };
 
   if (!poll) {
@@ -123,9 +132,16 @@ const Voting = () => {
                   <select
                     id={`${option.options_id}`}
                     name="rank"
-                    value={ballotData[option.options_id]}
+                    value={
+                      ballotData.find((b) => b.option_id === option.options_id)
+                        ?.rank || ""
+                    }
                     onChange={(e) =>
-                      handleRankChange(option.options_id, e.target.value)
+                      handleRankChange(
+                        option.options_id,
+                        e.target.value,
+                        pollID
+                      )
                     }
                   >
                     <option value="" disabled>
