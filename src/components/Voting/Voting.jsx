@@ -50,6 +50,7 @@ const Voting = ({ user }) => {
     fetchOptions();
   }, [pollID]);
 
+  // Publishing a poll
   const handlePublish = async () => {
     const newStatusData = { ...statusData, poll_status: "published" };
     setStatusData(newStatusData);
@@ -65,6 +66,7 @@ const Voting = ({ user }) => {
     }
   };
 
+  // Selecting a rank
   const handleRankChange = (optionId, rank) => {
     setBallotData((prev) =>
       prev.map((ballot) =>
@@ -75,6 +77,7 @@ const Voting = ({ user }) => {
     );
   };
 
+  // Saving Ballots
   const handleSaveRank = () => {
     console.log(ballotData);
 
