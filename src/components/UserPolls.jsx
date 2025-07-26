@@ -24,7 +24,9 @@ const UserPolls = () => {
         if (userResponse.data && userResponse.data.username) {
           setUserName(userResponse.data.username);
         }
-        const pollsResponse = await axios.get(`${API_URL}/api/polls`);
+        const pollsResponse = await axios.get(
+          `${API_URL}/api/polls/user/${userId}`
+        );
         setPolls(pollsResponse.data);
       } catch (err) {
         console.error(`Error fetching polls for user ${userId}:`, err);
