@@ -91,21 +91,23 @@ const Voting = ({ user }) => {
     setBallotData((prev) =>
       prev.map((ballot) =>
         ballot.option_id === optionId
-          ? { ...ballot, rank: rank, poll_id: pollID, user_id: user?.id }
+          ? {
+              ...ballot,
+              rank: rank,
+              poll_id: pollID,
+              user_id: user?.id,
+            }
           : ballot
       )
     );
   };
 
   const handleClear = (options) => {
-    // Extract all option IDs you want to clear
-    const optionIdsToClear = options.map((option) => option.options_id);
+    const optionIds = options.map((option) => option.options_id);
 
     setBallotData((prev) =>
       prev.map((ballot) =>
-        optionIdsToClear.includes(ballot.option_id)
-          ? { ...ballot, rank: "" }
-          : ballot
+        optionIds.includes(ballot.option_id) ? { ...ballot, rank: "" } : ballot
       )
     );
   };
@@ -191,7 +193,10 @@ const Voting = ({ user }) => {
                         "")
                     }
                     onChange={(e) =>
-                      handleRankChange(option.options_id, e.target.value)
+                      handleRankChange(
+                        option.options_id,
+                        Number(e.target.value)
+                      )
                     }
                   >
                     <option value="" disabled>
@@ -201,8 +206,9 @@ const Voting = ({ user }) => {
                     {Array.from({ length: options.length }, (_, i) => {
                       const rank = i + 1;
                       const isUsed = ballotData.some(
-                        (b) =>
-                          b.option_id !== option.options_id && b.rank === rank
+                        (ballot) =>
+                          ballot.option_id !== option.options_id &&
+                          ballot.rank === rank
                       );
                       return (
                         <option key={rank} value={rank} disabled={isUsed}>
