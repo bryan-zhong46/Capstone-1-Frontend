@@ -13,6 +13,7 @@ import MakePoll from "./components/MakePoll";
 import PollLists from "./components/PollLists";
 import UserPolls from "./components/UserPolls";
 import MyPolls from "./components/MyPolls";
+import PollResults from "./components/PollResults"; // Import PollResults
 import { API_URL } from "./shared";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { auth0Config } from "./auth0-config";
@@ -127,6 +128,8 @@ const App = () => {
             <Route path="/my-polls" element={<MyPolls loggedInUser={user} />} />
           ) : null}
           <Route path="/search" element={<Search user={user} />} />
+          {/* NEW: Route for PollResults */}
+          <Route path="/poll-results/:pollId" element={<PollResults />} />
         </Routes>
       </div>
     </div>

@@ -3,13 +3,13 @@ import "../NavBarStyles.css";
 import "./Profile.css";
 import { API_URL } from "../../shared";
 import axios from "axios";
-import { useParams, NavLink, useNavigate } from "react-router-dom";
+import { useParams, NavLink, useNavigate } from "react-router-dom"; 
 
 const UserProfile = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { id } = useParams();
-  const userID = Number(id); //convert id from string to number
+  const userID = Number(id); 
 
   const [profileUser, setProfileUser] = useState(null);
   const [isUser, setIsUser] = useState(false);
@@ -145,7 +145,8 @@ const UserProfile = ({ user }) => {
           <p>Email: {profileUser?.email}</p>
         </div>
       </div>
-      <NavLink to="./">View Polls</NavLink>
+      {/* CHANGE THIS LINE: from to="./" to to="/polls" */}
+      <NavLink to="/polls">View Polls</NavLink>
     </div>
   );
 };

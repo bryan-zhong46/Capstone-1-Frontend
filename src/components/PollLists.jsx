@@ -54,6 +54,12 @@ const PollLists = () => {
                 </p>
             )}
             <p className="poll-status">Status: {poll.poll_status}</p>
+            {/* NEW: Link to PollResults page for this poll */}
+            <div className="poll-actions">
+              <Link to={`/poll-results/${poll.poll_id}`} className="button view-results-button">
+                View IRV Results
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
