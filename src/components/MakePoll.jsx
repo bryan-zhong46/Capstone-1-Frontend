@@ -78,13 +78,19 @@ export default function MakePoll({ user }) {
       newErrors.title = "Title is required";
     }
     // Check for description
-    // if (!pollData.description) {
-    //   newErrors.description = "Description is required";
-    // }
+    if (!pollData.description) {
+      newErrors.description = "Description is required";
+    }
 
-    // TODO: Check for at least two poll options
+    // Check for at least two poll options
+    if (pollOptions.length < 2) {
+      newErrors.optionsLength = "At least 2 poll options are required"
+    }
 
-    // TODO: Check for an expiration date
+    // Check for an expiration date
+    if (!pollData.expiration) {
+      newErrors.expiration = "Expiration date is required";
+    }
 
     // Check that the poll currently being edited hasn't already been published
     if (pollData.poll_status === "published") {
@@ -100,6 +106,9 @@ export default function MakePoll({ user }) {
   async function handleSave(e) {
     e.preventDefault();
 
+    if (!validateForm()) {
+      return;
+    }
     // If a poll ID was provided in the URL, then use the patch route to update the existing poll.
     // Otherwise, use a post route to save/publish a new poll.
     if (isNaN(urlId)) {
@@ -265,6 +274,9 @@ export default function MakePoll({ user }) {
             onChange={handleDateChange}
             className={errors.expiration ? "error" : ""}
           />
+          {errors.expiration && (
+            <span className="error-text">{errors.expiration}</span>
+          )}
         </div>
 
         <div className="form-group">
@@ -284,6 +296,9 @@ export default function MakePoll({ user }) {
           newOption={newOption}
           setNewOption={setNewOption}
         />
+        {errors.optionsLength && (
+            <span className="error-text">{errors.optionsLength}</span>
+          )}
 
         <div className="button-container">
           <button type="button" onClick={handleSave}>
