@@ -16,6 +16,7 @@ const Voting = ({ user }) => {
 
   const [ballotsExist, setBallotsExist] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const params = user?.id ? { userid: user.id } : {};
 
   // Initialize ballot data with empty entries for each option
   useEffect(() => {
@@ -49,7 +50,8 @@ const Voting = ({ user }) => {
 
         // fetch ballot
         const ballotsRes = await axios.get(
-          `${API_URL}/api/polls/${id}/results`
+          `${API_URL}/api/polls/${id}/results`,
+          { params }
         );
 
         if (ballotsRes.data && ballotsRes.data.length > 0) {
@@ -89,7 +91,7 @@ const Voting = ({ user }) => {
     setBallotData((prev) =>
       prev.map((ballot) =>
         ballot.option_id === optionId
-          ? { ...ballot, rank: rank, poll_id: pollID, user_id: user?.id || " " }
+          ? { ...ballot, rank: rank, poll_id: pollID, user_id: user?.id }
           : ballot
       )
     );
