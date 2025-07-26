@@ -25,7 +25,7 @@ const Voting = ({ user }) => {
           option_id: option.options_id,
           rank: "",
           poll_id: pollID,
-          user_id: user.id,
+          user_id: user?.id,
         }));
         setBallotData(initialBallots);
       }
@@ -89,7 +89,7 @@ const Voting = ({ user }) => {
     setBallotData((prev) =>
       prev.map((ballot) =>
         ballot.option_id === optionId
-          ? { ...ballot, rank: rank, poll_id: pollID, user_id: user.id }
+          ? { ...ballot, rank: rank, poll_id: pollID, user_id: user?.id || " " }
           : ballot
       )
     );
@@ -193,7 +193,11 @@ const Voting = ({ user }) => {
             </form>
 
             <button>Close</button>
-            <button onClick={handleSaveRank}>Save</button>
+            {user ? (
+              <button onClick={handleSaveRank}>Save</button>
+            ) : (
+              <button onClick={handleSaveRank}>Vote</button>
+            )}
           </div>
         )}
 
