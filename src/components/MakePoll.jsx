@@ -48,20 +48,21 @@ export default function MakePoll({ user }) {
   async function fetchDraft(urlId) {
     // const poll_id = Number(params.id);
     try {
-      // get poll data of the draft poll
+      // get poll data of the provided poll_id
       const dPollResponse = await axios.get(`${API_URL}/api/polls/${urlId}`);
       console.log("DRAFT POLL RESPONSE", dPollResponse);
-      // get all poll options associated with the draft poll
+      // get all poll options associated with the provided poll_id
       const dOptionsResponse = await axios.get(
         `${API_URL}/api/polls/${urlId}/options`
       );
       console.log(dOptionsResponse);
+      // set the state
       const dPollData = dPollResponse.data;
       const dPollOptions = dOptionsResponse.data;
-      setPollData(dPollData);
-      setPollOptions(dPollOptions);
       console.log("DRAFT POLL DATA: ", dPollData);
       console.log("DRAFT POLL OPTIONS: ", dPollOptions);
+      setPollData(dPollData);
+      setPollOptions(dPollOptions);
     } catch (error) {
       console.log("Failed to fetch draft data");
       console.error(error);
@@ -84,6 +85,12 @@ export default function MakePoll({ user }) {
     // TODO: Check for at least two poll options
 
     // TODO: Check for an expiration date
+
+    // Check that the poll currently being edited hasn't already been published
+    if (pollData.poll_status === "published") {
+      newErrors.published =
+        "This poll has already been published and cannot be edited.";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -216,6 +223,9 @@ export default function MakePoll({ user }) {
 
   return (
     <div>
+      {errors.published && (
+        <span className="error-text">{errors.published}</span>
+      )}
       <h1>Make a Poll</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
