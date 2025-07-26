@@ -97,6 +97,19 @@ const Voting = ({ user }) => {
     );
   };
 
+  const handleClear = (options) => {
+    // Extract all option IDs you want to clear
+    const optionIdsToClear = options.map((option) => option.options_id);
+
+    setBallotData((prev) =>
+      prev.map((ballot) =>
+        optionIdsToClear.includes(ballot.option_id)
+          ? { ...ballot, rank: "" }
+          : ballot
+      )
+    );
+  };
+
   // Saving Ballots
   const handleSaveRank = () => {
     console.log(ballotData);
@@ -107,7 +120,7 @@ const Voting = ({ user }) => {
       try {
         if (ballotsExist) {
           const response = await axios.patch(
-            `${API_URL}/api/${ballot.pollvote_id}`,
+            `${API_URL}/api/pollvotes/${ballot.pollvote_id}`,
             ballot
           );
           console.log("Ballots patched:", response);
@@ -169,7 +182,7 @@ const Voting = ({ user }) => {
                 <div key={option.options_id}>
                   <label>{option.option_text}</label>
                   <select
-                    id={`${option.options_id}`}
+                    id={option.options_id}
                     name="rank"
                     value={
                       isLoaded &&
@@ -184,17 +197,26 @@ const Voting = ({ user }) => {
                     <option value="" disabled>
                       Select rank
                     </option>
-                    {Array.from({ length: options.length }, (_, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    ))}
+
+                    {Array.from({ length: options.length }, (_, i) => {
+                      const rank = i + 1;
+                      const isUsed = ballotData.some(
+                        (b) =>
+                          b.option_id !== option.options_id && b.rank === rank
+                      );
+                      return (
+                        <option key={rank} value={rank} disabled={isUsed}>
+                          {rank}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               ))}
             </form>
 
             <button>Close</button>
+            <button onClick={() => handleClear(options)}>Clear</button>
             {user ? (
               <button onClick={handleSaveRank}>Save</button>
             ) : (
