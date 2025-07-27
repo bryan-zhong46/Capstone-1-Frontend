@@ -22,11 +22,12 @@ export default function MakePoll({ user }) {
   const urlId = Number(params.id);
   console.log("POLL ID FROM URL", urlId);
 
+  console.log("USER: ", user);
+
   // State to hold poll data
   const [pollData, setPollData] = useState({
     title: "",
-    creator_id: 0, // placeholder value
-    // creator_id: user.id,
+    creator_id: (user ? user.id : 0), // placeholder value
     description: "",
     auth_required: false,
     expiration: "2025-07-23", // TODO set this to today's date
@@ -41,31 +42,32 @@ export default function MakePoll({ user }) {
 
   const [errors, setErrors] = useState({});
   // const [isLoading, setIsLoading] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   // Variable to track if poll is being published or not
   let isPublishing = false;
   // Fetch data of a draft poll
   async function fetchDraft(urlId) {
-    // const poll_id = Number(params.id);
-    try {
-      // get poll data of the provided poll_id
-      const dPollResponse = await axios.get(`${API_URL}/api/polls/${urlId}`);
-      console.log("DRAFT POLL RESPONSE", dPollResponse);
-      // get all poll options associated with the provided poll_id
-      const dOptionsResponse = await axios.get(
-        `${API_URL}/api/polls/${urlId}/options`
-      );
-      console.log(dOptionsResponse);
-      // set the state
-      const dPollData = dPollResponse.data;
-      const dPollOptions = dOptionsResponse.data;
-      console.log("DRAFT POLL DATA: ", dPollData);
-      console.log("DRAFT POLL OPTIONS: ", dPollOptions);
-      setPollData(dPollData);
-      setPollOptions(dPollOptions);
-    } catch (error) {
-      console.log("Failed to fetch draft data");
-      console.error(error);
+    if (urlId) {
+      try {
+        // get poll data of the provided poll_id
+        const dPollResponse = await axios.get(`${API_URL}/api/polls/${urlId}`);
+        console.log("DRAFT POLL RESPONSE", dPollResponse);
+        // get all poll options associated with the provided poll_id
+        const dOptionsResponse = await axios.get(
+          `${API_URL}/api/polls/${urlId}/options`
+        );
+        console.log(dOptionsResponse);
+        // set the state
+        const dPollData = dPollResponse.data;
+        const dPollOptions = dOptionsResponse.data;
+        console.log("DRAFT POLL DATA: ", dPollData);
+        console.log("DRAFT POLL OPTIONS: ", dPollOptions);
+        setPollData(dPollData);
+        setPollOptions(dPollOptions);
+      } catch (error) {
+        console.log("Failed to fetch draft data");
+        console.error(error);
+      }
     }
   }
 
@@ -84,7 +86,7 @@ export default function MakePoll({ user }) {
 
     // Check for at least two poll options
     if (pollOptions.length < 2) {
-      newErrors.optionsLength = "At least 2 poll options are required"
+      newErrors.optionsLength = "At least 2 poll options are required";
     }
 
     // Check for an expiration date
@@ -297,8 +299,8 @@ export default function MakePoll({ user }) {
           setNewOption={setNewOption}
         />
         {errors.optionsLength && (
-            <span className="error-text">{errors.optionsLength}</span>
-          )}
+          <span className="error-text">{errors.optionsLength}</span>
+        )}
 
         <div className="button-container">
           <button type="button" onClick={handleSave}>
