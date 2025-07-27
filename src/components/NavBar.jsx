@@ -9,12 +9,14 @@ const NavBar = ({ user, onLogout, auth0User }) => {
         <div>
           <Link to="/">Capstone I</Link>
         </div>
-        <div>
-          <Link to="/make-poll">Make a Poll</Link>
-        </div>
       </div>
 
       <div className="nav-links">
+        <div>
+          <Link to="/make-poll" className="nav-link">
+            Make a Poll
+          </Link>
+        </div>
         <div>
           <Link to="/polls" className="nav-link">
             Polls
