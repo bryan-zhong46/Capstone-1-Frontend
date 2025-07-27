@@ -194,7 +194,11 @@ const UserProfile = ({ user }) => {
           <p>Email: {profileUser?.email}</p>
         </div>
       </div>
-      <NavLink to="./">View Polls</NavLink>
+      {isUser ? (
+        <NavLink to="../my-polls">View Polls</NavLink>
+      ) : (
+        <NavLink to={`../users/${userID}/polls`}>View Polls</NavLink>
+      )}
       {isUser ? <button onClick={uploadImage}>Upload Image</button> : <></>}
     </div>
   );
