@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../../shared";
 import axios from "axios";
 import "./Voting.css";
 
 const Voting = ({ user }) => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const pollID = Number(id);
   const [poll, setPoll] = useState(null);
@@ -86,6 +87,22 @@ const Voting = ({ user }) => {
     }
   };
 
+  // Closing a poll
+  const handleClose = async () => {
+    const newStatusData = { ...statusData, poll_status: "closed" };
+    setStatusData(newStatusData);
+
+    try {
+      const response = await axios.patch(
+        `${API_URL}/api/polls/${id}`,
+        newStatusData
+      );
+      console.log("Closed:", response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Selecting a rank
   const handleRankChange = (optionId, rank) => {
     console.log("handleRankChange:", { optionId, rank, pollID, user });
@@ -141,6 +158,15 @@ const Voting = ({ user }) => {
             ballot
           );
           console.log("Ballots posted:", response);
+
+          const { data: updatedPollres } = await axios.get(
+            `${API_URL}/api/polls/${id}`
+          );
+          const updatedPoll = {
+            ...poll,
+            number_of_votes: updatedPollres.number_of_votes,
+          };
+          setPoll(updatedPoll);
         }
       } catch (err) {
         console.error(err);
@@ -166,6 +192,10 @@ const Voting = ({ user }) => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleEdit = () => {
+    navigate(`/make-poll/${pollID}`);
   };
 
   if (!poll) {
@@ -194,21 +224,21 @@ const Voting = ({ user }) => {
         </div>
 
         <div className="buttons">
-          {statusData.poll_status === "draft" && (
-            <div>
-              <p>Options:</p>
-              <div className="poll-options-list">
-                {options.map((option) => (
-                  <div key={option.options_id}>
-                    <label>{option.option_text}</label>
-                  </div>
-                ))}
+          {user?.user_id === poll.creator_id &&
+            statusData.poll_status === "draft" && (
+              <div>
+                <p>Options:</p>
+                <div className="poll-options-list">
+                  {options.map((option) => (
+                    <div key={option.options_id}>
+                      <label>{option.option_text}</label>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={handlePublish}>Publish</button>
+                <button onClick={handleEdit}>Edit</button>
               </div>
-              <button onClick={handlePublish}>Publish</button>
-              <button>Edit</button>
-              <button>Save</button>
-            </div>
-          )}
+            )}
 
           {statusData.poll_status === "published" && (
             <div>
@@ -260,10 +290,12 @@ const Voting = ({ user }) => {
                     ))}
                   </form>
                   <div className="Button">
-                    <button>Close</button>
                     <button onClick={() => handleClear(options)}>Clear</button>
-                    {user ? (
-                      <button onClick={handleSaveRank}>Save</button>
+                    {user?.user_id === poll.creator_id ? (
+                      <>
+                        <button onClick={handleClose}>Close</button>
+                        <button onClick={handleSaveRank}>Save</button>
+                      </>
                     ) : (
                       <button onClick={handleSaveRank}>Vote</button>
                     )}
@@ -289,6 +321,7 @@ const Voting = ({ user }) => {
           {statusData.poll_status === "closed" && (
             <div>
               <p>Poll is closed</p>
+              <button onClick={handlePublish}>Open the poll</button>
             </div>
           )}
         </div>
