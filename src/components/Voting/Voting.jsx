@@ -158,6 +158,15 @@ const Voting = ({ user }) => {
             ballot
           );
           console.log("Ballots posted:", response);
+
+          const { data: updatedPollres } = await axios.get(
+            `${API_URL}/api/polls/${id}`
+          );
+          const updatedPoll = {
+            ...poll,
+            number_of_votes: updatedPollres.number_of_votes,
+          };
+          setPoll(updatedPoll);
         }
       } catch (err) {
         console.error(err);
@@ -312,6 +321,7 @@ const Voting = ({ user }) => {
           {statusData.poll_status === "closed" && (
             <div>
               <p>Poll is closed</p>
+              <button onClick={handlePublish}>Open the poll</button>
             </div>
           )}
         </div>
