@@ -17,6 +17,7 @@ const UserProfile = ({ user }) => {
     isAdmin: user.isAdmin,
     isDisabled: user.isDisabled,
   });
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const checkUser = () => {
     if (user?.id === userID) {
@@ -51,6 +52,31 @@ const UserProfile = ({ user }) => {
       });
     }
   }, [profileUser]);
+
+  const handleFileChange = (e) => {
+    e.preventDefault();
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const uploadImage = async () => {
+    // get s3 url from backend
+    try {
+      const res = await axios.get(`${API_URL}/s3Url`);
+      const { url } = res.data;
+      console.log(url);
+
+      await axios.put(url, selectedFile, {
+        headers: {
+          "Content-Type": selectedFile.type,
+        },
+      });
+
+      const imageUrl = url.split("?")[0];
+      console.log("Image uploaded:", imageUrl);
+    } catch (error) {
+      console.error("Error fetching S3 URL:", error);
+    }
+  };
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
@@ -127,6 +153,7 @@ const UserProfile = ({ user }) => {
           ) : (
             <></>
           )}
+          <input type="file" onChange={handleFileChange}></input>
         </div>
       ) : (
         <div>
@@ -146,6 +173,7 @@ const UserProfile = ({ user }) => {
         </div>
       </div>
       <NavLink to="./">View Polls</NavLink>
+      <button onClick={uploadImage}>Upload Image</button>
     </div>
   );
 };
