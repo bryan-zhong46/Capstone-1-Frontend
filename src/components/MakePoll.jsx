@@ -146,6 +146,7 @@ export default function MakePoll({ user }) {
         console.log("Failed to save poll");
       }
     }
+    navigate("/polls/:id");
   }
 
   // Handle poll publication
@@ -193,6 +194,7 @@ export default function MakePoll({ user }) {
         console.log("Poll creation failed");
       }
     }
+    navigate("/polls/:id");
   } // end of handleSubmit
 
   function handleTextChange(e) {
