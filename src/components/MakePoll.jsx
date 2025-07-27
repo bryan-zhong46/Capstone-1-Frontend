@@ -13,8 +13,9 @@ import MakePollOptions from "./MakePollOptions";
  * - expirationDate: date (required)
  */
 
-// const today = new Date();
-// const todaysDateString = today.toDateString();
+const today = new Date();
+const todayDS = today.toISOString().substring(0,10);
+console.log("TODAY'S DATE: ", todayDS);
 
 export default function MakePoll({ user }) {
   // Get the poll_id of the poll being edited from the url
@@ -30,7 +31,8 @@ export default function MakePoll({ user }) {
     creator_id: (user ? user.id : 0), // placeholder value
     description: "",
     auth_required: false,
-    expiration: "2025-07-23", // TODO set this to today's date
+    // expiration: "2025-07-23", // TODO set this to today's date
+    expiration: todayDS,
     poll_status: "draft",
   });
 
@@ -261,6 +263,8 @@ export default function MakePoll({ user }) {
           <textarea
             id="description"
             name="description"
+            rows="5"
+            cols="50"
             value={pollData.description}
             onChange={handleTextChange}
             className={errors.description ? "error" : ""}
