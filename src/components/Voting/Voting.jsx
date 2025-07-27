@@ -25,7 +25,7 @@ const Voting = ({ user }) => {
     if (!ballotsExist) {
       if (options.length > 0) {
         const initialBallots = options.map((option) => ({
-          option_id: option.options_id,
+          option_id: option.option_id,
           rank: "",
           poll_id: pollID,
           user_id: user?.id,
@@ -122,7 +122,7 @@ const Voting = ({ user }) => {
 
   // Clear a poll
   const handleClear = (options) => {
-    const optionIds = options.map((option) => option.options_id);
+    const optionIds = options.map((option) => option.option_id);
 
     setBallotData((prev) =>
       prev.map((ballot) =>
@@ -230,7 +230,7 @@ const Voting = ({ user }) => {
                 <p>Options:</p>
                 <div className="poll-options-list">
                   {options.map((option) => (
-                    <div key={option.options_id}>
+                    <div key={option.option_id}>
                       <label>{option.option_text}</label>
                     </div>
                   ))}
@@ -247,21 +247,21 @@ const Voting = ({ user }) => {
                   <form>
                     <h4>Rank the options:</h4>
                     {options.map((option) => (
-                      <div key={option.options_id}>
+                      <div key={option.option_id}>
                         <label>{option.option_text}</label>
                         <select
-                          id={option.options_id}
+                          id={option.option_id}
                           name="rank"
                           value={
                             isLoaded &&
                             (ballotData.find(
-                              (b) => b.option_id === option.options_id
-                            )?.rank ||
+                              (b) => b.option_id === option.option_id
+                            )?.rank ??
                               "")
                           }
                           onChange={(e) =>
                             handleRankChange(
-                              option.options_id,
+                              option.option_id,
                               Number(e.target.value)
                             )
                           }
@@ -276,7 +276,7 @@ const Voting = ({ user }) => {
                             const rank = i + 1;
                             const isUsed = ballotData.some(
                               (ballot) =>
-                                ballot.option_id !== option.options_id &&
+                                ballot.option_id !== option.option_id &&
                                 ballot.rank === rank
                             );
                             return (
