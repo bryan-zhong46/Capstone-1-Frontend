@@ -27,7 +27,7 @@ const NavBar = ({ user, onLogout, auth0User }) => {
             </Link>
             <span className="username">Welcome, {user.username}!</span>
             <img
-              src={auth0User?.picture}
+              src={auth0User?.picture || user?.profile_image}
               className="auth-profile-picture"
             ></img>
             <button onClick={onLogout} className="logout-btn">
