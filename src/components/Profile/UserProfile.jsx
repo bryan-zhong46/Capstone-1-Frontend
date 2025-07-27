@@ -14,8 +14,9 @@ const UserProfile = ({ user }) => {
   const [profileUser, setProfileUser] = useState(null);
   const [isUser, setIsUser] = useState(false);
   const [userData, setUserData] = useState({
-    isAdmin: user.isAdmin,
-    isDisabled: user.isDisabled,
+    isAdmin: user?.isAdmin,
+    isDisabled: user?.isDisabled,
+    profile_image: user?.profile_image,
   });
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -34,7 +35,7 @@ const UserProfile = ({ user }) => {
         const response = await axios.get(`${API_URL}/api/users/${id}`);
         setProfileUser(response.data);
       } catch (err) {
-        console.error("Error fetching student:", err);
+        console.error("Error fetching user:", err);
       } finally {
         setLoading(false);
       }
@@ -49,6 +50,7 @@ const UserProfile = ({ user }) => {
       setUserData({
         isAdmin: profileUser.isAdmin,
         isDisabled: profileUser.isDisabled,
+        profile_image: profileUser.profile_image,
       });
     }
   }, [profileUser]);
@@ -59,20 +61,32 @@ const UserProfile = ({ user }) => {
   };
 
   const uploadImage = async () => {
-    // get s3 url from backend
     try {
+      // Get s3 url from backend
       const res = await axios.get(`${API_URL}/s3Url`);
       const { url } = res.data;
       console.log(url);
 
+      // Upload file to s3 bucket
       await axios.put(url, selectedFile, {
         headers: {
           "Content-Type": selectedFile.type,
         },
       });
 
+      // Get imageUrl
       const imageUrl = url.split("?")[0];
       console.log("Image uploaded:", imageUrl);
+
+      // Update backend
+      await axios.patch(`${API_URL}/api/users/${id}`, {
+        profile_image: imageUrl,
+      });
+
+      setUserData((prev) => ({
+        ...prev,
+        profile_image: imageUrl,
+      }));
     } catch (error) {
       console.error("Error fetching S3 URL:", error);
     }
@@ -119,9 +133,9 @@ const UserProfile = ({ user }) => {
       ) : (
         <></>
       )}
-      {isUser || user.isAdmin ? (
+      {isUser || user?.isAdmin ? (
         <div>
-          {user.isAdmin ? (
+          {user?.isAdmin ? (
             <>
               <label>Admin Panel</label>
               <div className="admin-controls">
@@ -165,6 +179,14 @@ const UserProfile = ({ user }) => {
         <div className="user-profile-title">
           <h1>{profileUser?.username}</h1>
         </div>
+
+        {userData.profile_image ? (
+          <div className="user-profile-picture">
+            <img src={userData.profile_image}></img>
+          </div>
+        ) : (
+          <></>
+        )}
 
         <div className="user-profile-body">
           <p>Username: {profileUser?.username}</p>
