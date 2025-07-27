@@ -87,6 +87,22 @@ const Voting = ({ user }) => {
     }
   };
 
+  // Closing a poll
+  const handleClose = async () => {
+    const newStatusData = { ...statusData, poll_status: "closed" };
+    setStatusData(newStatusData);
+
+    try {
+      const response = await axios.patch(
+        `${API_URL}/api/polls/${id}`,
+        newStatusData
+      );
+      console.log("Closed:", response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Selecting a rank
   const handleRankChange = (optionId, rank) => {
     console.log("handleRankChange:", { optionId, rank, pollID, user });
@@ -264,10 +280,12 @@ const Voting = ({ user }) => {
                     ))}
                   </form>
                   <div className="Button">
-                    <button>Close</button>
                     <button onClick={() => handleClear(options)}>Clear</button>
-                    {user ? (
-                      <button onClick={handleSaveRank}>Save</button>
+                    {user?.user_id === poll.creator_id ? (
+                      <>
+                        <button onClick={handleClose}>Close</button>
+                        <button onClick={handleSaveRank}>Save</button>
+                      </>
                     ) : (
                       <button onClick={handleSaveRank}>Vote</button>
                     )}
