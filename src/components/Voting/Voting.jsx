@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../../shared";
 import axios from "axios";
 import "./Voting.css";
 
 const Voting = ({ user }) => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const pollID = Number(id);
   const [poll, setPoll] = useState(null);
@@ -168,6 +169,10 @@ const Voting = ({ user }) => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/make-poll/${pollID}`);
+  };
+
   if (!poll) {
     return <p>Poll is not found</p>;
   }
@@ -205,8 +210,7 @@ const Voting = ({ user }) => {
                 ))}
               </div>
               <button onClick={handlePublish}>Publish</button>
-              <button>Edit</button>
-              <button>Save</button>
+              <button onClick={handleEdit}>Edit</button>
             </div>
           )}
 
