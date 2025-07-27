@@ -63,13 +63,14 @@ const Voting = ({ user }) => {
           setBallotData(ballotsRes.data);
           console.log("Ballot exists");
         }
+        setIsLoaded(true);
       } catch (err) {
         console.error(err);
       }
     };
 
     fetchAllData();
-    setIsLoaded(true);
+
     console.log("fetching data");
   }, [pollID]);
 
@@ -91,17 +92,41 @@ const Voting = ({ user }) => {
 
   // Closing a poll
   const handleClose = async () => {
+    console.log("ballotsExist:", ballotsExist);
     const newStatusData = { ...statusData, poll_status: "closed" };
     setStatusData(newStatusData);
 
     try {
       const response = await axios.patch(`${API_URL}/api/polls/${id}`, {
         pollData: newStatusData,
-        isPublishing: true,
       });
       console.log("Closed:", response);
     } catch (err) {
       console.error(err);
+    }
+
+    // set isSubmitted to true for each ballot
+    if (ballotsExist) {
+      for (const ballot of ballotData) {
+        try {
+          const response = await axios.patch(
+            `${API_URL}/api/pollvotes/${ballot.pollvote_id}`,
+            { isSubmitted: true }
+          );
+          console.log("Ballots patched to submitted:", response);
+
+          const { data: updatedPollres } = await axios.get(
+            `${API_URL}/api/polls/${id}`
+          );
+          const updatedPoll = {
+            ...poll,
+            number_of_votes: updatedPollres.number_of_votes,
+          };
+          setPoll(updatedPoll);
+        } catch (err) {
+          console.error(err);
+        }
+      }
     }
   };
 
@@ -134,7 +159,7 @@ const Voting = ({ user }) => {
   };
 
   // Saving Ballots
-  const handleSaveRank = () => {
+  const handleSaveRank = async () => {
     console.log(ballotData);
     console.log(ballotsExist);
 
@@ -146,7 +171,7 @@ const Voting = ({ user }) => {
     }
 
     // check if ballots already exist. if they do then patch. if not then post.
-    ballotData.forEach(async (ballot) => {
+    for (const ballot of ballotData) {
       try {
         if (ballotsExist) {
           const response = await axios.patch(
@@ -160,20 +185,20 @@ const Voting = ({ user }) => {
             ballot
           );
           console.log("Ballots posted:", response);
-
-          const { data: updatedPollres } = await axios.get(
-            `${API_URL}/api/polls/${id}`
-          );
-          const updatedPoll = {
-            ...poll,
-            number_of_votes: updatedPollres.number_of_votes,
-          };
-          setPoll(updatedPoll);
         }
       } catch (err) {
         console.error(err);
       }
+    }
+
+    const ballotsRes = await axios.get(`${API_URL}/api/polls/${id}/published`, {
+      params,
     });
+
+    if (ballotsRes.data && ballotsRes.data.length > 0) {
+      setBallotsExist(true);
+      setBallotData(ballotsRes.data);
+    }
   };
 
   //Disable a poll
