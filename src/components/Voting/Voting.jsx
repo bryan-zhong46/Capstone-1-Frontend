@@ -199,56 +199,63 @@ const Voting = ({ user }) => {
 
         {statusData.poll_status === "published" && (
           <div>
-            <form>
-              <h4>Rank the options:</h4>
-              {options.map((option) => (
-                <div key={option.options_id}>
-                  <label>{option.option_text}</label>
-                  <select
-                    id={option.options_id}
-                    name="rank"
-                    value={
-                      isLoaded &&
-                      (ballotData.find((b) => b.option_id === option.options_id)
-                        ?.rank ||
-                        "")
-                    }
-                    onChange={(e) =>
-                      handleRankChange(
-                        option.options_id,
-                        Number(e.target.value)
-                      )
-                    }
-                  >
-                    <option value="" disabled>
-                      Select rank
-                    </option>
-
-                    {Array.from({ length: options.length }, (_, i) => {
-                      const rank = i + 1;
-                      const isUsed = ballotData.some(
-                        (ballot) =>
-                          ballot.option_id !== option.options_id &&
-                          ballot.rank === rank
-                      );
-                      return (
-                        <option key={rank} value={rank} disabled={isUsed}>
-                          {rank}
+            {!poll?.isDisabled && (
+              <>
+                <form>
+                  <h4>Rank the options:</h4>
+                  {options.map((option) => (
+                    <div key={option.options_id}>
+                      <label>{option.option_text}</label>
+                      <select
+                        id={option.options_id}
+                        name="rank"
+                        value={
+                          isLoaded &&
+                          (ballotData.find(
+                            (b) => b.option_id === option.options_id
+                          )?.rank ||
+                            "")
+                        }
+                        onChange={(e) =>
+                          handleRankChange(
+                            option.options_id,
+                            Number(e.target.value)
+                          )
+                        }
+                      >
+                        <option value="" disabled>
+                          Select rank
                         </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              ))}
-            </form>
 
-            <button>Close</button>
-            <button onClick={() => handleClear(options)}>Clear</button>
-            {user ? (
-              <button onClick={handleSaveRank}>Save</button>
-            ) : (
-              <button onClick={handleSaveRank}>Vote</button>
+                        {Array.from({ length: options.length }, (_, i) => {
+                          const rank = i + 1;
+                          const isUsed = ballotData.some(
+                            (ballot) =>
+                              ballot.option_id !== option.options_id &&
+                              ballot.rank === rank
+                          );
+                          return (
+                            <option key={rank} value={rank} disabled={isUsed}>
+                              {rank}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                  ))}
+                </form>
+                <div className="Button">
+                  <button>Close</button>
+                  <button onClick={() => handleClear(options)}>Clear</button>
+                  {user ? (
+                    <button onClick={handleSaveRank}>Save</button>
+                  ) : (
+                    <button onClick={handleSaveRank}>Vote</button>
+                  )}
+                </div>
+              </>
             )}
+
             {user?.isAdmin ? (
               <div className="checkbox-group">
                 <input
