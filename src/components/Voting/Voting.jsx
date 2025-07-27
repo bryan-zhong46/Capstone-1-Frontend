@@ -224,7 +224,7 @@ const Voting = ({ user }) => {
         </div>
 
         <div className="buttons">
-          {user?.user_id === poll.creator_id &&
+          {user?.id === poll.creator_id &&
             statusData.poll_status === "draft" && (
               <div>
                 <p>Options:</p>
@@ -291,7 +291,7 @@ const Voting = ({ user }) => {
                   </form>
                   <div className="Button">
                     <button onClick={() => handleClear(options)}>Clear</button>
-                    {user?.user_id === poll.creator_id ? (
+                    {user?.id === poll.creator_id ? (
                       <>
                         <button onClick={handleClose}>Close</button>
                         <button onClick={handleSaveRank}>Save</button>
