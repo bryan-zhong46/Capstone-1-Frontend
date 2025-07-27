@@ -52,9 +52,11 @@ const Voting = ({ user }) => {
 
         // fetch ballot
         const ballotsRes = await axios.get(
-          `${API_URL}/api/polls/${id}/results`,
+          `${API_URL}/api/polls/${id}/published`,
           { params }
         );
+
+        console.log(ballotsRes);
 
         if (ballotsRes.data && ballotsRes.data.length > 0) {
           setBallotsExist(true);
@@ -184,10 +186,12 @@ const Voting = ({ user }) => {
       setPoll((prev) => ({
         ...prev,
         isDisabled: checked,
+        poll_status: "closed",
       }));
 
       await axios.patch(`${API_URL}/api/polls/${id}`, {
         isDisabled: checked,
+        poll_status: "closed",
       });
     } catch (err) {
       console.log(err);
@@ -219,7 +223,7 @@ const Voting = ({ user }) => {
             <p>Description: {poll?.description}</p>
             <p>Expiration: {poll?.Expiration}</p>
             <p>Number of Votes: {poll?.number_of_votes}</p>
-            <p>Poll status: {poll?.poll_status}</p>
+            <p>Poll status: {statusData?.poll_status}</p>
           </div>
         </div>
 
