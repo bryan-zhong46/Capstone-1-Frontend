@@ -1,0 +1,38 @@
+.poll-container {
+  max-width: 500px;
+}
+
+.poll-card {
+  background-color: beige;
+  border-radius: 6px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  padding: 20px;
+  border: 2px solid black;
+}
+
+.poll-title {
+  font-size: 1.5rem;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+}
+
+.poll-body p {
+  margin: 8px 0;
+}
+
+.save-button {
+  background-color: #09c509;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.save-button:hover {
+  background-color: #178603;
+}

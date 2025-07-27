@@ -5,9 +5,14 @@ require("dotenv").config();
 module.exports = {
   mode: "development",
   entry: "./src/App.jsx",
+  // entry: {
+  //   index: "./src/App.js",
+  //   another: "./src/components/MakePoll.jsx",
+  // },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "main.js",
+    // filename: "name.bundle.js",
     publicPath: "/",
   },
   devtool: "source-map",
@@ -47,6 +52,11 @@ module.exports = {
     compress: true,
     historyApiFallback: true,
     port: 3000,
-    // allowedHosts: "all", // replit code
+    allowedHosts: "all", // replit code
+  },
+  // performance: { hints: false },
+  performance: {
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
   },
 };
