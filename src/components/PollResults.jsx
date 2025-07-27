@@ -24,9 +24,9 @@ const getRankedChoiceWinner = (ballots) => {
   ballots.forEach((ballot) => {
     ballot.forEach((vote) => remainingOptionIds.add(vote.option_id));
   });
-  console.log("Initial remainingOptionIds:", Array.from(remainingOptionIds));
 
   let currentBallots = ballots.map((b) => [...b]);
+  const rounds = [];
 
   while (true) {
     const voteCounts = {};
@@ -38,17 +38,20 @@ const getRankedChoiceWinner = (ballots) => {
       }
     }
 
-    console.log("Current vote counts:", voteCounts);
-
     const totalVotes = Object.values(voteCounts).reduce((a, b) => a + b, 0);
 
+    const roundSnapshot = {
+      counts: { ...voteCounts },
+      eliminated: [],
+    };
+
+    // Check for winner
     for (const [optionId, count] of Object.entries(voteCounts)) {
       if (count > totalVotes / 2) {
-        console.log("Winner found:", optionId);
+        rounds.push(roundSnapshot);
         return {
           winner: optionId,
-          rounds: voteCounts,
-          eliminated: [],
+          rounds,
           tiedBetween: [],
         };
       }
@@ -59,16 +62,14 @@ const getRankedChoiceWinner = (ballots) => {
       (optionId) => voteCounts[optionId] === minVotes
     );
 
-    console.log("Options to eliminate this round:", toEliminate);
-  console.log("Remaining options before elimination:", Array.from(remainingOptionIds));
+    roundSnapshot.eliminated = [...toEliminate];
+    rounds.push(roundSnapshot);
 
     if (toEliminate.length === remainingOptionIds.size) {
-      console.log("Tie detected among:", Array.from(remainingOptionIds));
       return {
         winner: null,
         tiedBetween: Array.from(remainingOptionIds),
-        rounds: voteCounts,
-        eliminated: [],
+        rounds,
       };
     }
 
@@ -76,13 +77,9 @@ const getRankedChoiceWinner = (ballots) => {
       remainingOptionIds.delete(Number(id));
     }
 
-    console.log("Remaining options after elimination:", Array.from(remainingOptionIds));
-
     currentBallots = currentBallots.map((ballot) =>
       ballot.filter((vote) => remainingOptionIds.has(vote.option_id))
     );
-
-    console.log("Ballots after filtering eliminated options:", currentBallots);
   }
 };
 
@@ -98,13 +95,17 @@ const PollResults = ({ pollId }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const votesRes = await axios.get(`${API_URL}/api/polls/${pollId}/results`);
-        const optionsRes = await axios.get(`${API_URL}/api/polls/${pollId}/options`);
+        const votesRes = await axios.get(
+          `${API_URL}/api/polls/${pollId}/results`
+        );
+        const optionsRes = await axios.get(
+          `${API_URL}/api/polls/${pollId}/options`
+        );
 
         const votes = votesRes.data;
         const options = optionsRes.data;
         console.log("Votes raw:", votes);
-    console.log("Options raw:", options);
+        console.log("Options raw:", options);
 
         const map = {};
         for (const option of options) {
@@ -115,7 +116,10 @@ const PollResults = ({ pollId }) => {
         const ballotMap = {};
         for (const vote of votes) {
           if (!ballotMap[vote.user_id]) ballotMap[vote.user_id] = [];
-          ballotMap[vote.user_id].push({ option_id: vote.option_id, rank: vote.rank });
+          ballotMap[vote.user_id].push({
+            option_id: vote.option_id,
+            rank: vote.rank,
+          });
         }
 
         const ballotsArray = Object.values(ballotMap).map((ballot) =>
@@ -182,12 +186,33 @@ const PollResults = ({ pollId }) => {
           </li>
         ))}
       </ul>
-
+      <h3>Round-by-Round Breakdown</h3>
+      {rankedResult?.rounds.map((round, index) => (
+        <div key={index}>
+          <strong>Round {index + 1}:</strong>
+          <ul>
+            {Object.entries(round.counts).map(([optionId, count]) => (
+              <li key={optionId}>
+                {optionMap[optionId] || `Option ${optionId}`}: {count} vote
+                {count !== 1 ? "s" : ""}
+              </li>
+            ))}
+          </ul>
+          {round.eliminated.length > 0 && (
+            <p>
+              Eliminated:{" "}
+              {round.eliminated
+                .map((id) => `${optionMap[id]}`)
+                .join(", ")}
+            </p>
+          )}
+        </div>
+      ))}
       <h3>Ranked-Choice Winner</h3>
       {rankedResult ? (
         rankedResult.winner ? (
           <p>
-            Winner: {optionMap[rankedResult.winner]} (Option {rankedResult.winner})
+            Winner: {optionMap[rankedResult.winner]}
           </p>
         ) : (
           <p>
