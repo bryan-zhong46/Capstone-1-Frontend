@@ -215,20 +215,21 @@ const Voting = ({ user }) => {
         </div>
 
         <div className="buttons">
-          {statusData.poll_status === "draft" && (
-            <div>
-              <p>Options:</p>
-              <div className="poll-options-list">
-                {options.map((option) => (
-                  <div key={option.options_id}>
-                    <label>{option.option_text}</label>
-                  </div>
-                ))}
+          {user?.user_id === poll.creator_id &&
+            statusData.poll_status === "draft" && (
+              <div>
+                <p>Options:</p>
+                <div className="poll-options-list">
+                  {options.map((option) => (
+                    <div key={option.options_id}>
+                      <label>{option.option_text}</label>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={handlePublish}>Publish</button>
+                <button onClick={handleEdit}>Edit</button>
               </div>
-              <button onClick={handlePublish}>Publish</button>
-              <button onClick={handleEdit}>Edit</button>
-            </div>
-          )}
+            )}
 
           {statusData.poll_status === "published" && (
             <div>
