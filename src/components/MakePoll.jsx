@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../shared";
 import MakePollOptions from "./MakePollOptions";
@@ -124,6 +124,7 @@ export default function MakePoll({ user }) {
         });
         console.log("RESPONSE", response);
         console.log("New poll saved successfully");
+        navigate(`/polls/${response.data.poll_id}`);
       } catch (error) {
         console.error(error);
         console.log("Failed to save poll");
@@ -141,12 +142,12 @@ export default function MakePoll({ user }) {
         console.log("PATCHED POLLOPTIONS: ", pollOptions);
         console.log("RESPONSE", response);
         console.log("Poll updated and saved successfully");
+        navigate(`/polls/${response.data.poll_id}`);
       } catch (error) {
         console.error(error);
         console.log("Failed to save poll");
       }
     }
-    navigate("/polls/:id");
   }
 
   // Handle poll publication
@@ -172,6 +173,7 @@ export default function MakePoll({ user }) {
         console.log("POLL OPTIONS", pollOptions);
         console.log("New poll published successfully");
         console.log("POLL RESPONSE", response);
+        navigate(`/polls/${response.data.poll_id}`);
       } catch (error) {
         console.error(error);
         console.log("Poll creation failed");
@@ -189,12 +191,12 @@ export default function MakePoll({ user }) {
         console.log("POLL OPTIONS", pollOptions);
         console.log("Draft poll published successfully");
         console.log("POLL RESPONSE", response);
+        navigate(`/polls/${response.data.poll_id}`);
       } catch (error) {
         console.error(error);
         console.log("Poll creation failed");
       }
     }
-    navigate("/polls/:id");
   } // end of handleSubmit
 
   function handleTextChange(e) {
