@@ -227,6 +227,10 @@ const Voting = ({ user }) => {
     navigate(`/make-poll/${pollID}`);
   };
 
+  const handleResults = () => {
+    navigate(`/polls/${pollID}/results`);
+  };
+
   if (!poll) {
     return <p>Poll is not found</p>;
   }
@@ -351,6 +355,7 @@ const Voting = ({ user }) => {
             <div>
               <p>Poll is closed</p>
               <button onClick={handlePublish}>Open the poll</button>
+              <button onClick={handleResults}>View Results</button>
             </div>
           )}
         </div>
