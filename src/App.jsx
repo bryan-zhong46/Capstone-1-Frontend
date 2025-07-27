@@ -35,7 +35,7 @@ const App = () => {
         withCredentials: true,
       });
       setUser(response.data.user);
-      console.log(response.data.user);
+      console.log("user:", response.data.user);
     } catch {
       console.log("Not authenticated");
       setUser(null);
@@ -118,7 +118,7 @@ const App = () => {
             }
           />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
-          <Route path="/make-poll" element={<MakePoll user={user} />} /> 
+          <Route path="/make-poll" element={<MakePoll user={user} />} />
           <Route path="/make-poll/:id" element={<MakePoll user={user} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
