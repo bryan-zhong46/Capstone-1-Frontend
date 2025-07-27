@@ -16,7 +16,8 @@ const Voting = ({ user }) => {
 
   const [ballotsExist, setBallotsExist] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const params = user?.id ? { userid: user.id } : {};
+  const params = user?.id ? { userid: user.id } : {}; // user ID as a query parameter
+  const [showSubmitWarning, setShowSubmitWarning] = useState(false);
 
   // Initialize ballot data with empty entries for each option
   useEffect(() => {
@@ -102,6 +103,7 @@ const Voting = ({ user }) => {
     );
   };
 
+  // Clear a poll
   const handleClear = (options) => {
     const optionIds = options.map((option) => option.options_id);
 
@@ -116,6 +118,13 @@ const Voting = ({ user }) => {
   const handleSaveRank = () => {
     console.log(ballotData);
     console.log(ballotsExist);
+
+    const hasEmptyRank = ballotData.some((b) => b.rank === 0);
+
+    if (hasEmptyRank && !showSubmitWarning) {
+      setShowSubmitWarning(true);
+      return;
+    }
 
     // check if ballots already exist. if they do then patch. if not then post.
     ballotData.forEach(async (ballot) => {
@@ -139,6 +148,26 @@ const Voting = ({ user }) => {
     });
   };
 
+  //Disable a poll
+  const handleDisable = async (e) => {
+    const { checked } = e.target;
+
+    if (!poll) return;
+
+    try {
+      setPoll((prev) => ({
+        ...prev,
+        isDisabled: checked,
+      }));
+
+      await axios.patch(`${API_URL}/api/polls/${id}`, {
+        isDisabled: checked,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   if (!poll) {
     return <p>Poll is not found</p>;
   }
@@ -148,96 +177,123 @@ const Voting = ({ user }) => {
   }
 
   return (
-    <div className="poll-container">
-      <div className="poll-card">
-        <div className="poll-title">{poll?.title}</div>
-        <div className="poll-body">
-          <p>Description: {poll?.description}</p>
-          <p>Expiration: {poll?.Expiration}</p>
-          <p>Number of Votes: {poll?.number_of_votes}</p>
-          <p>Poll status: {poll?.poll_status}</p>
+    <>
+      {" "}
+      {showSubmitWarning && (
+        <p>You have not ranked all choices. Are you sure you want to submit?</p>
+      )}
+      <div className="poll-container">
+        <div className="poll-card">
+          <div className="poll-title">{poll?.title}</div>
+          <div className="poll-body">
+            <p>Description: {poll?.description}</p>
+            <p>Expiration: {poll?.Expiration}</p>
+            <p>Number of Votes: {poll?.number_of_votes}</p>
+            <p>Poll status: {poll?.poll_status}</p>
+          </div>
+        </div>
+
+        <div className="buttons">
+          {statusData.poll_status === "draft" && (
+            <div>
+              <p>Options:</p>
+              <div className="poll-options-list">
+                {options.map((option) => (
+                  <div key={option.options_id}>
+                    <label>{option.option_text}</label>
+                  </div>
+                ))}
+              </div>
+              <button onClick={handlePublish}>Publish</button>
+              <button>Edit</button>
+              <button>Save</button>
+            </div>
+          )}
+
+          {statusData.poll_status === "published" && (
+            <div>
+              {!poll?.isDisabled && (
+                <>
+                  <form>
+                    <h4>Rank the options:</h4>
+                    {options.map((option) => (
+                      <div key={option.options_id}>
+                        <label>{option.option_text}</label>
+                        <select
+                          id={option.options_id}
+                          name="rank"
+                          value={
+                            isLoaded &&
+                            (ballotData.find(
+                              (b) => b.option_id === option.options_id
+                            )?.rank ||
+                              "")
+                          }
+                          onChange={(e) =>
+                            handleRankChange(
+                              option.options_id,
+                              Number(e.target.value)
+                            )
+                          }
+                        >
+                          <option value="" disabled>
+                            Select rank
+                          </option>
+
+                          <option value=""></option>
+
+                          {Array.from({ length: options.length }, (_, i) => {
+                            const rank = i + 1;
+                            const isUsed = ballotData.some(
+                              (ballot) =>
+                                ballot.option_id !== option.options_id &&
+                                ballot.rank === rank
+                            );
+                            return (
+                              <option key={rank} value={rank} disabled={isUsed}>
+                                {rank}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                    ))}
+                  </form>
+                  <div className="Button">
+                    <button>Close</button>
+                    <button onClick={() => handleClear(options)}>Clear</button>
+                    {user ? (
+                      <button onClick={handleSaveRank}>Save</button>
+                    ) : (
+                      <button onClick={handleSaveRank}>Vote</button>
+                    )}
+                  </div>
+                </>
+              )}
+              {user?.isAdmin ? (
+                <div className="checkbox-group">
+                  <input
+                    type="checkbox"
+                    name="isDisabled"
+                    checked={poll.isDisabled}
+                    onChange={handleDisable}
+                  />
+                  <label>Disable this poll?</label>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+          )}
+
+          {statusData.poll_status === "closed" && (
+            <div>
+              <p>Poll is closed</p>
+            </div>
+          )}
         </div>
       </div>
-
-      <div className="buttons">
-        {statusData.poll_status === "draft" && (
-          <div>
-            <p>Options:</p>
-            <div className="poll-options-list">
-              {options.map((option) => (
-                <div key={option.options_id}>
-                  <label>{option.option_text}</label>
-                </div>
-              ))}
-            </div>
-            <button onClick={handlePublish}>Publish</button>
-            <button>Edit</button>
-            <button>Save</button>
-          </div>
-        )}
-
-        {statusData.poll_status === "published" && (
-          <div>
-            <form>
-              <h4>Rank the options:</h4>
-              {options.map((option) => (
-                <div key={option.options_id}>
-                  <label>{option.option_text}</label>
-                  <select
-                    id={option.options_id}
-                    name="rank"
-                    value={
-                      isLoaded &&
-                      (ballotData.find((b) => b.option_id === option.options_id)
-                        ?.rank ||
-                        "")
-                    }
-                    onChange={(e) =>
-                      handleRankChange(
-                        option.options_id,
-                        Number(e.target.value)
-                      )
-                    }
-                  >
-                    <option value="" disabled>
-                      Select rank
-                    </option>
-
-                    {Array.from({ length: options.length }, (_, i) => {
-                      const rank = i + 1;
-                      const isUsed = ballotData.some(
-                        (ballot) =>
-                          ballot.option_id !== option.options_id &&
-                          ballot.rank === rank
-                      );
-                      return (
-                        <option key={rank} value={rank} disabled={isUsed}>
-                          {rank}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              ))}
-            </form>
-
-            <button>Close</button>
-            <button onClick={() => handleClear(options)}>Clear</button>
-            {user ? (
-              <button onClick={handleSaveRank}>Save</button>
-            ) : (
-              <button onClick={handleSaveRank}>Vote</button>
-            )}
-          </div>
-        )}
-
-        {statusData.poll_status === "closed" && (
-          <div>
-            <p>Poll is closed</p>
-          </div>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 
