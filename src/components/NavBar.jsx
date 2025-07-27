@@ -15,6 +15,11 @@ const NavBar = ({ user, onLogout, auth0User }) => {
       </div>
 
       <div className="nav-links">
+        <div>
+          <Link to="/polls" className="nav-link">
+            Polls
+          </Link>
+        </div>
         {user ? (
           <div className="user-section">
             <Link to={`/users/${user.id}`} className="nav-link">
