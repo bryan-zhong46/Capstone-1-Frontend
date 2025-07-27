@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../shared";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 // === Helper functions ===
 const roundResults = (ballots) => {
@@ -38,20 +39,16 @@ const getRankedChoiceWinner = (ballots) => {
       }
     }
 
+    rounds.push({ ...voteCounts });
+
     const totalVotes = Object.values(voteCounts).reduce((a, b) => a + b, 0);
 
-    const roundSnapshot = {
-      counts: { ...voteCounts },
-      eliminated: [],
-    };
-
-    // Check for winner
     for (const [optionId, count] of Object.entries(voteCounts)) {
       if (count > totalVotes / 2) {
-        rounds.push(roundSnapshot);
         return {
           winner: optionId,
           rounds,
+          eliminated: [],
           tiedBetween: [],
         };
       }
@@ -62,14 +59,12 @@ const getRankedChoiceWinner = (ballots) => {
       (optionId) => voteCounts[optionId] === minVotes
     );
 
-    roundSnapshot.eliminated = [...toEliminate];
-    rounds.push(roundSnapshot);
-
     if (toEliminate.length === remainingOptionIds.size) {
       return {
         winner: null,
         tiedBetween: Array.from(remainingOptionIds),
         rounds,
+        eliminated: [],
       };
     }
 
@@ -176,29 +171,19 @@ const PollResults = ({ pollId }) => {
           </li>
         ))}
       </ul>
-
-      <h3>First-Choice Vote Count</h3>
-      <ul>
-        {Object.entries(scores).map(([optionId, count]) => (
-          <li key={optionId}>
-            {optionMap[optionId] || `Option ${optionId}`}: {count} first-choice
-            vote{count !== 1 ? "s" : ""}
-          </li>
-        ))}
-      </ul>
       <h3>Round-by-Round Breakdown</h3>
       {rankedResult?.rounds.map((round, index) => (
         <div key={index}>
           <strong>Round {index + 1}:</strong>
           <ul>
-            {Object.entries(round.counts).map(([optionId, count]) => (
+            {Object.entries(round).map(([optionId, count]) => (
               <li key={optionId}>
                 {optionMap[optionId] || `Option ${optionId}`}: {count} vote
                 {count !== 1 ? "s" : ""}
               </li>
             ))}
           </ul>
-          {round.eliminated.length > 0 && (
+          {round.eliminated?.length > 0 && (
             <p>
               Eliminated:{" "}
               {round.eliminated
@@ -225,6 +210,31 @@ const PollResults = ({ pollId }) => {
       ) : (
         <p>Calculating winner...</p>
       )}
+      <h3>Voting Rounds</h3>
+{rankedResult?.rounds && rankedResult.rounds.length > 0 ? (
+  <ResponsiveContainer width="100%" height={300}>
+    <BarChart
+      data={rankedResult.rounds.map((round, index) => {
+        const obj = { round: `Round ${index + 1}` };
+        for (const [optionId, count] of Object.entries(round)) {
+          obj[optionMap[optionId] || `Option ${optionId}`] = count;
+        }
+        return obj;
+      })}
+      margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+    >
+      <XAxis dataKey="round" />
+      <YAxis allowDecimals={false} />
+      <Tooltip />
+      <Legend />
+      {Object.values(optionMap).map((label, idx) => (
+        <Bar key={label} dataKey={label} fill={`hsl(${(idx * 80) % 360}, 60%, 60%)`} />
+      ))}
+    </BarChart>
+  </ResponsiveContainer>
+) : (
+  <p>No round data available.</p>
+)}
     </div>
   );
 };
