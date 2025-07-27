@@ -77,10 +77,10 @@ const Voting = ({ user }) => {
     setStatusData(newStatusData);
 
     try {
-      const response = await axios.patch(
-        `${API_URL}/api/polls/${id}`,
-        newStatusData
-      );
+      const response = await axios.patch(`${API_URL}/api/polls/${id}`, {
+        pollData: newStatusData,
+        isPublishing: true,
+      });
       console.log("Published:", response);
     } catch (err) {
       console.error(err);
@@ -93,10 +93,10 @@ const Voting = ({ user }) => {
     setStatusData(newStatusData);
 
     try {
-      const response = await axios.patch(
-        `${API_URL}/api/polls/${id}`,
-        newStatusData
-      );
+      const response = await axios.patch(`${API_URL}/api/polls/${id}`, {
+        pollData: newStatusData,
+        isPublishing: true,
+      });
       console.log("Closed:", response);
     } catch (err) {
       console.error(err);
