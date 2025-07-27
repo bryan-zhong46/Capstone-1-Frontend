@@ -102,6 +102,7 @@ const Voting = ({ user }) => {
     );
   };
 
+  // Clear a poll
   const handleClear = (options) => {
     const optionIds = options.map((option) => option.options_id);
 
@@ -137,6 +138,26 @@ const Voting = ({ user }) => {
         console.error(err);
       }
     });
+  };
+
+  //Disable a poll
+  const handleDisable = async (e) => {
+    const { checked } = e.target;
+
+    if (!poll) return;
+
+    try {
+      setPoll((prev) => ({
+        ...prev,
+        isDisabled: checked,
+      }));
+
+      await axios.patch(`${API_URL}/api/polls/${id}`, {
+        isDisabled: checked,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   if (!poll) {
@@ -227,6 +248,19 @@ const Voting = ({ user }) => {
               <button onClick={handleSaveRank}>Save</button>
             ) : (
               <button onClick={handleSaveRank}>Vote</button>
+            )}
+            {user?.isAdmin ? (
+              <div className="checkbox-group">
+                <input
+                  type="checkbox"
+                  name="isDisabled"
+                  checked={poll.isDisabled}
+                  onChange={handleDisable}
+                />
+                <label>Disable this poll?</label>
+              </div>
+            ) : (
+              <></>
             )}
           </div>
         )}
