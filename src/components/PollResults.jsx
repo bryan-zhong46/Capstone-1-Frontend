@@ -2,50 +2,131 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../shared";
 
+// === Helper functions ===
+const roundResults = (ballots) => {
+  const scoreMap = {};
+  for (const ballot of ballots) {
+    const topChoice = ballot.find((vote) => vote.rank === 1);
+    console.log("Top choice for ballot:", topChoice);
+    if (topChoice) {
+      if (!scoreMap[topChoice.option_id]) {
+        scoreMap[topChoice.option_id] = 0;
+      }
+      scoreMap[topChoice.option_id] += 1;
+    }
+  }
+  console.log("Score map after roundResults:", scoreMap);
+  return scoreMap;
+};
+
+const getRankedChoiceWinner = (ballots) => {
+  let remainingOptionIds = new Set();
+  ballots.forEach((ballot) => {
+    ballot.forEach((vote) => remainingOptionIds.add(vote.option_id));
+  });
+  console.log("Initial remainingOptionIds:", Array.from(remainingOptionIds));
+
+  let currentBallots = ballots.map((b) => [...b]);
+
+  while (true) {
+    const voteCounts = {};
+
+    for (const ballot of currentBallots) {
+      const top = ballot.find((vote) => remainingOptionIds.has(vote.option_id));
+      if (top) {
+        voteCounts[top.option_id] = (voteCounts[top.option_id] || 0) + 1;
+      }
+    }
+
+    console.log("Current vote counts:", voteCounts);
+
+    const totalVotes = Object.values(voteCounts).reduce((a, b) => a + b, 0);
+
+    for (const [optionId, count] of Object.entries(voteCounts)) {
+      if (count > totalVotes / 2) {
+        console.log("Winner found:", optionId);
+        return {
+          winner: optionId,
+          rounds: voteCounts,
+          eliminated: [],
+          tiedBetween: [],
+        };
+      }
+    }
+
+    const minVotes = Math.min(...Object.values(voteCounts));
+    const toEliminate = Object.keys(voteCounts).filter(
+      (optionId) => voteCounts[optionId] === minVotes
+    );
+
+    console.log("Options to eliminate this round:", toEliminate);
+  console.log("Remaining options before elimination:", Array.from(remainingOptionIds));
+
+    if (toEliminate.length === remainingOptionIds.size) {
+      console.log("Tie detected among:", Array.from(remainingOptionIds));
+      return {
+        winner: null,
+        tiedBetween: Array.from(remainingOptionIds),
+        rounds: voteCounts,
+        eliminated: [],
+      };
+    }
+
+    for (const id of toEliminate) {
+      remainingOptionIds.delete(Number(id));
+    }
+
+    console.log("Remaining options after elimination:", Array.from(remainingOptionIds));
+
+    currentBallots = currentBallots.map((ballot) =>
+      ballot.filter((vote) => remainingOptionIds.has(vote.option_id))
+    );
+
+    console.log("Ballots after filtering eliminated options:", currentBallots);
+  }
+};
+
+// === Main component ===
 const PollResults = ({ pollId }) => {
   const [ballots, setBallots] = useState([]);
   const [optionMap, setOptionMap] = useState({});
+  const [scores, setScores] = useState({});
+  const [rankedResult, setRankedResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchResults() {
       try {
-        const [votesRes, optionsRes] = await Promise.all([
-          axios.get(`${API_URL}/api/polls/${pollId}/results`),
-          axios.get(`${API_URL}/api/polls/${pollId}/options`),
-        ]);
+        const votesRes = await axios.get(`${API_URL}/api/polls/${pollId}/results`);
+        const optionsRes = await axios.get(`${API_URL}/api/polls/${pollId}/options`);
 
         const votes = votesRes.data;
         const options = optionsRes.data;
+        console.log("Votes raw:", votes);
+    console.log("Options raw:", options);
 
-        // Create a map of option_id to option text
         const map = {};
         for (const option of options) {
-          map[option.option_id] = option.option_text; // or option.option_text depending on your model
+          map[option.option_id] = option.option_text;
         }
         setOptionMap(map);
 
-        // Group by user_id to create ballots
         const ballotMap = {};
         for (const vote of votes) {
-          if (!ballotMap[vote.user_id]) {
-            ballotMap[vote.user_id] = [];
-          }
-          ballotMap[vote.user_id].push({
-            option_id: vote.option_id,
-            rank: vote.rank,
-          });
+          if (!ballotMap[vote.user_id]) ballotMap[vote.user_id] = [];
+          ballotMap[vote.user_id].push({ option_id: vote.option_id, rank: vote.rank });
         }
 
-        // Sort each user's ballot by rank
         const ballotsArray = Object.values(ballotMap).map((ballot) =>
           ballot.sort((a, b) => a.rank - b.rank)
         );
 
+        console.log("Grouped ballots:", ballotsArray);
+
         setBallots(ballotsArray);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching poll results:", err);
         setError("Failed to fetch results.");
       } finally {
         setLoading(false);
@@ -55,26 +136,23 @@ const PollResults = ({ pollId }) => {
     fetchResults();
   }, [pollId]);
 
+  useEffect(() => {
+    if (ballots.length === 0) return;
+
+    try {
+      const newScores = roundResults(ballots);
+      const newResult = getRankedChoiceWinner(ballots);
+
+      setScores(newScores);
+      setRankedResult(newResult);
+    } catch (err) {
+      console.error("Error calculating results:", err);
+      setError("Failed to calculate poll results.");
+    }
+  }, [ballots]);
+
   if (loading) return <p>Loading poll results...</p>;
   if (error) return <p>{error}</p>;
-
-  const roundResults = (ballots) => {
-    const scoreMap = {};
-
-    for (const ballot of ballots) {
-      const topChoice = ballot.find((vote) => vote.rank === 1);
-      if (topChoice) {
-        if (!scoreMap[topChoice.option_id]) {
-          scoreMap[topChoice.option_id] = 0;
-        }
-        scoreMap[topChoice.option_id] += 1;
-      }
-    }
-
-    return scoreMap;
-  };
-
-  const scores = roundResults(ballots);
 
   return (
     <div>
@@ -94,6 +172,7 @@ const PollResults = ({ pollId }) => {
           </li>
         ))}
       </ul>
+
       <h3>First-Choice Vote Count</h3>
       <ul>
         {Object.entries(scores).map(([optionId, count]) => (
@@ -103,6 +182,24 @@ const PollResults = ({ pollId }) => {
           </li>
         ))}
       </ul>
+
+      <h3>Ranked-Choice Winner</h3>
+      {rankedResult ? (
+        rankedResult.winner ? (
+          <p>
+            Winner: {optionMap[rankedResult.winner]} (Option {rankedResult.winner})
+          </p>
+        ) : (
+          <p>
+            No clear winner. Final round was a tie between:{" "}
+            {rankedResult.tiedBetween
+              .map((id) => `${optionMap[id]} (Option ${id})`)
+              .join(", ")}
+          </p>
+        )
+      ) : (
+        <p>Calculating winner...</p>
+      )}
     </div>
   );
 };
