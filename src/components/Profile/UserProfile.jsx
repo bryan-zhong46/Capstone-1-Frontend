@@ -195,7 +195,7 @@ const UserProfile = ({ user }) => {
         </div>
       </div>
       <NavLink to="./">View Polls</NavLink>
-      <button onClick={uploadImage}>Upload Image</button>
+      {isUser ? <button onClick={uploadImage}>Upload Image</button> : <></>}
     </div>
   );
 };
