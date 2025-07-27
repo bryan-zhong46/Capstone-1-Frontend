@@ -117,7 +117,8 @@ const App = () => {
             }
           />
           <Route path="/signup" element={<Signup setUser={setUser} />} />
-          <Route path="/make-poll" element={<MakePoll setUser={setUser} />} />
+          <Route path="/make-poll" element={<MakePoll user={user} />} /> 
+          <Route path="/make-poll/:id" element={<MakePoll user={user} />} />
           <Route exact path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/users/:id" element={<UserProfile user={user} />} />
