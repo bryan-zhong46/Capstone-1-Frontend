@@ -250,7 +250,10 @@ const Voting = ({ user }) => {
           <div className="poll-title">{poll?.title}</div>
           <div className="poll-body">
             <p>Description: {poll?.description}</p>
-            <p>Expiration: {poll?.Expiration}</p>
+            <p>
+              Expiration:{" "}
+              {new Date(poll?.expiration).toISOString().split("T")[0]}
+            </p>
             <p>Number of Votes: {poll?.number_of_votes}</p>
             <p>Poll status: {statusData?.poll_status}</p>
           </div>
