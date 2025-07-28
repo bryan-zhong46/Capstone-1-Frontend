@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../shared";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 // === Helper functions ===
 const roundResults = (ballots) => {
@@ -186,9 +194,7 @@ const PollResults = ({ pollId }) => {
           {round.eliminated?.length > 0 && (
             <p>
               Eliminated:{" "}
-              {round.eliminated
-                .map((id) => `${optionMap[id]}`)
-                .join(", ")}
+              {round.eliminated.map((id) => `${optionMap[id]}`).join(", ")}
             </p>
           )}
         </div>
@@ -196,9 +202,7 @@ const PollResults = ({ pollId }) => {
       <h3>Ranked-Choice Winner</h3>
       {rankedResult ? (
         rankedResult.winner ? (
-          <p>
-            Winner: {optionMap[rankedResult.winner]}
-          </p>
+          <p>Winner: {optionMap[rankedResult.winner]}</p>
         ) : (
           <p>
             No clear winner. Final round was a tie between:{" "}
@@ -211,30 +215,34 @@ const PollResults = ({ pollId }) => {
         <p>Calculating winner...</p>
       )}
       <h3>Voting Rounds</h3>
-{rankedResult?.rounds && rankedResult.rounds.length > 0 ? (
-  <ResponsiveContainer width="100%" height={300}>
-    <BarChart
-      data={rankedResult.rounds.map((round, index) => {
-        const obj = { round: `Round ${index + 1}` };
-        for (const [optionId, count] of Object.entries(round)) {
-          obj[optionMap[optionId] || `Option ${optionId}`] = count;
-        }
-        return obj;
-      })}
-      margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
-    >
-      <XAxis dataKey="round" />
-      <YAxis allowDecimals={false} />
-      <Tooltip />
-      <Legend />
-      {Object.values(optionMap).map((label, idx) => (
-        <Bar key={label} dataKey={label} fill={`hsl(${(idx * 80) % 360}, 60%, 60%)`} />
-      ))}
-    </BarChart>
-  </ResponsiveContainer>
-) : (
-  <p>No round data available.</p>
-)}
+      {rankedResult?.rounds && rankedResult.rounds.length > 0 ? (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={rankedResult.rounds.map((round, index) => {
+              const obj = { round: `Round ${index + 1}` };
+              for (const [optionId, count] of Object.entries(round)) {
+                obj[optionMap[optionId] || `Option ${optionId}`] = count;
+              }
+              return obj;
+            })}
+            margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+          >
+            <XAxis dataKey="round" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            {Object.values(optionMap).map((label, idx) => (
+              <Bar
+                key={label}
+                dataKey={label}
+                fill={`hsl(${(idx * 80) % 360}, 60%, 60%)`}
+              />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <p>No round data available.</p>
+      )}
     </div>
   );
 };
