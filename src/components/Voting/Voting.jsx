@@ -106,8 +106,12 @@ const Voting = ({ user }) => {
     }
 
     // set isSubmitted to true for each ballot
-    if (ballotsExist) {
-      for (const ballot of ballotData) {
+    try {
+      const { data: newBallots } = await axios.get(
+        `${API_URL}/api/polls/${id}/published`
+      );
+
+      for (const ballot of newBallots) {
         try {
           const response = await axios.patch(
             `${API_URL}/api/pollvotes/${ballot.pollvote_id}`,
@@ -127,6 +131,8 @@ const Voting = ({ user }) => {
           console.error(err);
         }
       }
+    } catch (err) {
+      console.error("Failed to fetch fresh ballots:", err);
     }
   };
 
