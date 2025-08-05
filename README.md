@@ -2,7 +2,7 @@
 
 This project uses React and React-Router to display a Single-Page App.
 
-Please refer to the [Capstone I Project Requirements](./REQUIREMENTS.md), as well as the [Collaboration Guide](./CAPSTONE-I.md).
+Please refer to the [Capstone I Project Requirements](./REQUIREMENTS.md), as well as the [Collaboration Guide](./CAPSTONE-I.md). 
 
 ## Getting Started
 
